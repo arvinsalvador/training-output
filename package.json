@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node ./build/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "clean": "rimraf build",
+    "clean": "rimraf build/",
     "build": "npm run clean && tsc --project tsconfig.json"
   },
   "repository": {
@@ -25,11 +25,14 @@
     "graphql-tools": "^4.0.0",
     "koa": "^2.5.3",
     "koa-graphql": "^0.7.5",
-    "koa-router": "^7.4.0"
+    "koa-router": "^7.4.0",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "@types/graphql": "^14.0.0",
     "@types/koa": "^2.0.46",
+    "@types/uuid": "^3.4.4",
+    "rimraf": "^2.6.2",
     "tslint": "^5.11.0",
     "typescript": "^3.0.3"
   }

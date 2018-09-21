@@ -1,15 +1,50 @@
 import * as Koa from 'koa';
 import { ApolloServer, gql } from 'apollo-server-koa';
+import * as uuid from 'uuid/v4';
 
 const typeDefs = gql`
+  type Account {
+    id: ID
+    balance: Float
+    availableBalance: Float
+  }
+
   type Query {
-    hello: String
+    account(id: ID): Account
+  }
+
+  input AccountInput {
+    id: ID
+    balance: Float!
+    availableBalance: Float!
+  }
+
+  type Mutation {
+    createAccount(input: AccountInput): Account
   }
 `;
 
+class Account {
+  id = String;
+  balance = Number;
+  availableBalance = Number;
+  constructor(id, data: any){
+    this.id = id;
+    this.balance = data.balance;
+    this.availableBalance = data.availableBalance;
+  }
+}
+
+const accountDatabase = {};
+
 const resolvers = {
-  Query: {
-    hello: () => 'Hello world!',
+  Mutation: {
+    createAccount: (obj: Object, args: {input:Object}) => {
+      let id = uuid();
+      accountDatabase[id] = args.input;
+      console.log(args.input);
+      return new Account(id, args.input);
+    }
   }
 };
 
