@@ -1,5 +1,16 @@
 {
-    "extends": "./tsconfig/base",
+    "compilerOptions": {
+      "target": "es2017",
+      "module": "commonjs",
+      "allowJs": true,
+      "moduleResolution": "node",
+      "lib": ["es7", "es2016.array.include", "dom", "esnext.asynciterable"],
+      "allowSyntheticDefaultImports": true,
+      "outDir": "./build",
+      "sourceMap": true,
+      "strictNullChecks": true,
+      "noUnusedLocals": true,
+    },
     "include": ["src/"],
     "exclude": ["node_modules/", "**/node_modules/*", ".history"]
   }
