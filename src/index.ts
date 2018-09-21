@@ -10,7 +10,7 @@ const typeDefs = gql`
   }
 
   type Query {
-    account(id: ID): Account
+    account(id: ID!): Account
   }
 
   input AccountInput {
@@ -38,6 +38,11 @@ class Account {
 const accountDatabase = {};
 
 const resolvers = {
+  Query: {
+    account: (obj:Object, args: {id}) => {
+      return new Account(args.id, accountDatabase[args.id]);
+    }
+  },
   Mutation: {
     createAccount: (obj: Object, args: {input:Object}) => {
       let id = uuid();
