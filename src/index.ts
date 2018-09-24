@@ -11,13 +11,14 @@ const typeDefs = gql`
 
   type ReservedBalance {
     id: ID
+    accountId: String
     context: String
     balance: Float
   }
 
   type Query {
     account(id: ID!): Account
-    reservedBalance(context: String!): ReservedBalance
+    reservedBalance(id: ID!): ReservedBalance
   }
 
   input AccountInput {
@@ -33,8 +34,9 @@ const typeDefs = gql`
   }
 
   input ReservedBalanceInput {
-    id: ID!
-    context: String
+    id: ID
+    accountId: String!
+    context: String!
     balance: Float!
   }
 
@@ -58,17 +60,19 @@ class Account {
 
 class ReservedBalance {
   id: string
+  accountId: string
   context: string
   balance: number
-  constructor(context, data: any){
-    this.id = data.id;
-    this.context = context;
+  constructor(id, data: any){
+    this.id = id;
+    this.accountId = data.accountId
+    this.context = data.context;
     this.balance = data.balance;
   }
 }
 
 const accountDatabase: { [id: string]: Account } = {};
-const reservedBalanceDatabase: { [context: string]: ReservedBalance } = {};
+const reservedBalanceDatabase: { [id: string]: ReservedBalance } = {};
 
 interface AccountBalanceInput {
   id: string
@@ -84,6 +88,7 @@ interface UpdateAccountBalanceInput {
 
 interface CreateReservedBalanceInput {
   id: string
+  accountId: string
   context: string
   balance: number
 }
@@ -93,8 +98,8 @@ const resolvers = {
     account: (obj: {}, args: {id}) => {
       return accountDatabase[args.id];
     },
-    reservedBalance: (obj: {}, args: { context }) => {
-      return reservedBalanceDatabase[args.context];
+    reservedBalance: (obj: {}, args: { id }) => {
+      return reservedBalanceDatabase[args.id];
     }
   },
   Mutation: {
@@ -105,7 +110,7 @@ const resolvers = {
     },
     updateBalance: (obj: {}, args: { input: UpdateAccountBalanceInput }) => {
       const account = accountDatabase[args.input.account];
-
+      
       if(!account){
         throw new Error ('User not found!');
       }
@@ -120,10 +125,15 @@ const resolvers = {
       return delta;
     },
     createReservedBalance: (obj: {}, args: { input: CreateReservedBalanceInput }) => {
-      const account = accountDatabase[args.input.id];
+      const account = accountDatabase[args.input.accountId];
+      const reserveBalance = reservedBalanceDatabase[args.input.context];
 
       if(!account){
         throw new Error ('User not found!');
+      }
+
+      if(reserveBalance){
+        throw new Error ('Context already exists');
       }
 
       if(args.input.balance > account.balance){
@@ -133,9 +143,9 @@ const resolvers = {
       const newAccountBalance = account.balance - args.input.balance;
       account.balance = newAccountBalance;
 
-      let context = uuid();
-      reservedBalanceDatabase[context] = new ReservedBalance(context, args.input);
-      return reservedBalanceDatabase[context];
+      let id = uuid();
+      reservedBalanceDatabase[id] = new ReservedBalance(id, args.input);
+      return reservedBalanceDatabase[id];
     }
   }
 };
