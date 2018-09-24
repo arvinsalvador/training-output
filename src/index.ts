@@ -40,10 +40,18 @@ const typeDefs = gql`
     balance: Float!
   }
 
+  input UpdateReservedBalanceInput {
+    request: ID
+    account: ID!
+    context: String!
+    amount: Float!
+  }
+
   type Mutation {
     createAccount(input: AccountInput): Account
     updateBalance(input: UpdateBalanceInput): Float!
     createReservedBalance(input: ReservedBalanceInput): ReservedBalance!
+    updateReservedBalance(input: UpdateReservedBalanceInput): ReservedBalance!
   }
 `;
 
@@ -91,6 +99,13 @@ interface CreateReservedBalanceInput {
   accountId: string
   context: string
   balance: number
+}
+
+interface UpdateReservedBalanceInput {
+  request: string
+  account: string
+  context: string
+  amount: number
 }
 
 const resolvers = {
@@ -146,6 +161,18 @@ const resolvers = {
       let id = uuid();
       reservedBalanceDatabase[id] = new ReservedBalance(id, args.input);
       return reservedBalanceDatabase[id];
+    },
+    updateReservedBalance: (obj: {}, args: { input: UpdateReservedBalanceInput }) => {
+      const reserveBalance = reservedBalanceDatabase[args.input.account, args.input.context];
+
+      if(!reserveBalance){
+        throw new Error ('Reserve Balance not Found!');
+      }
+
+      const delta = reserveBalance.balance + args.input.amount;
+      reserveBalance.balance = delta;
+
+      return reservedBalanceDatabase[args.input.account, args.input.context];
     }
   }
 };
