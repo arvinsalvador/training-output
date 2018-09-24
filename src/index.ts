@@ -9,8 +9,15 @@ const typeDefs = gql`
     availableBalance: Float
   }
 
+  type ReservedBalance {
+    id: ID
+    context: String
+    balance: Float
+  }
+
   type Query {
     account(id: ID!): Account
+    reservedBalance(context: String!): ReservedBalance
   }
 
   input AccountInput {
@@ -25,9 +32,16 @@ const typeDefs = gql`
     amount: Float
   }
 
+  input ReservedBalanceInput {
+    id: ID!
+    context: String
+    balance: Float!
+  }
+
   type Mutation {
     createAccount(input: AccountInput): Account
     updateBalance(input: UpdateBalanceInput): Float!
+    createReservedBalance(input: ReservedBalanceInput): ReservedBalance!
   }
 `;
 
@@ -42,7 +56,19 @@ class Account {
   }
 }
 
+class ReservedBalance {
+  id: string
+  context: string
+  balance: number
+  constructor(context, data: any){
+    this.id = data.id;
+    this.context = context;
+    this.balance = data.balance;
+  }
+}
+
 const accountDatabase: { [id: string]: Account } = {};
+const reservedBalanceDatabase: { [context: string]: ReservedBalance } = {};
 
 interface AccountBalanceInput {
   id: string
@@ -56,10 +82,19 @@ interface UpdateAccountBalanceInput {
   amount: number
 }
 
+interface CreateReservedBalanceInput {
+  id: string
+  context: string
+  balance: number
+}
+
 const resolvers = {
   Query: {
-    account: (obj:{}, args: {id}) => {
+    account: (obj: {}, args: {id}) => {
       return accountDatabase[args.id];
+    },
+    reservedBalance: (obj: {}, args: { context }) => {
+      return reservedBalanceDatabase[args.context];
     }
   },
   Mutation: {
@@ -83,6 +118,24 @@ const resolvers = {
 
       account.balance = delta;
       return delta;
+    },
+    createReservedBalance: (obj: {}, args: { input: CreateReservedBalanceInput }) => {
+      const account = accountDatabase[args.input.id];
+
+      if(!account){
+        throw new Error ('User not found!');
+      }
+
+      if(args.input.balance > account.balance){
+        throw new Error ('Insufficient Funds');
+      }
+
+      const newAccountBalance = account.balance - args.input.balance;
+      account.balance = newAccountBalance;
+
+      let context = uuid();
+      reservedBalanceDatabase[context] = new ReservedBalance(context, args.input);
+      return reservedBalanceDatabase[context];
     }
   }
 };
