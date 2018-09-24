@@ -25,9 +25,9 @@ const typeDefs = gql`
 `;
 
 class Account {
-  id = String;
-  balance = Number;
-  availableBalance = Number;
+  id: string;
+  balance: number;
+  availableBalance: number;
   constructor(id, data: any){
     this.id = id;
     this.balance = data.balance;
@@ -35,20 +35,25 @@ class Account {
   }
 }
 
-const accountDatabase = {};
+const accountDatabase: { [id: string]: Account } = {};
+
+interface AccountBalanceInput {
+  id: string
+  balance: number
+  availableBalance: number
+}
 
 const resolvers = {
   Query: {
-    account: (obj:Object, args: {id}) => {
-      return new Account(args.id, accountDatabase[args.id]);
+    account: (obj:{}, args: {id}) => {
+      return accountDatabase[args.id];
     }
   },
   Mutation: {
-    createAccount: (obj: Object, args: {input:Object}) => {
+    createAccount: (obj: {}, args: {input:AccountBalanceInput}) => {
       let id = uuid();
-      accountDatabase[id] = args.input;
-      console.log(args.input);
-      return new Account(id, args.input);
+      accountDatabase[id] = new Account(id, args.input);
+      return accountDatabase[id];
     }
   }
 };
