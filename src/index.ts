@@ -19,8 +19,15 @@ const typeDefs = gql`
     availableBalance: Float!
   }
 
+  input UpdateBalanceInput {
+    request: ID!
+    account: ID!
+    amount: Float
+  }
+
   type Mutation {
     createAccount(input: AccountInput): Account
+    updateBalance(input: UpdateBalanceInput): Float!
   }
 `;
 
@@ -43,6 +50,12 @@ interface AccountBalanceInput {
   availableBalance: number
 }
 
+interface UpdateAccountBalanceInput {
+  request: string
+  account: string
+  amount: number
+}
+
 const resolvers = {
   Query: {
     account: (obj:{}, args: {id}) => {
@@ -50,10 +63,26 @@ const resolvers = {
     }
   },
   Mutation: {
-    createAccount: (obj: {}, args: {input:AccountBalanceInput}) => {
+    createAccount: (obj: {}, args: { input: AccountBalanceInput }) => {
       let id = uuid();
       accountDatabase[id] = new Account(id, args.input);
       return accountDatabase[id];
+    },
+    updateBalance: (obj: {}, args: { input: UpdateAccountBalanceInput }) => {
+      const account = accountDatabase[args.input.account];
+
+      if(!account){
+        throw new Error ('User not found!');
+      }
+
+      const delta = account.balance + args.input.amount;
+      
+      if(delta < 0){
+        throw new Error ('Insufficient Funds');
+      }
+
+      account.balance = delta;
+      return delta;
     }
   }
 };
