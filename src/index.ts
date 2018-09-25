@@ -154,7 +154,10 @@ const resolvers = {
     },
     createReservedBalance: (obj: {}, args: { input: CreateReservedBalanceInput }) => {
       const account = accountDatabase[args.input.accountId];
-      const reserveBalance = reservedBalanceDatabase[args.input.context];
+      const [reserveBalance] = Object
+        .keys(reservedBalanceDatabase)
+        .map(id => reservedBalanceDatabase[id])
+        .filter(reserved => reserved.context === args.input.context);
 
       if (!account) {
         throw new Error ('User not found!');
@@ -171,9 +174,9 @@ const resolvers = {
       const newAccountBalance = account.balance - args.input.balance;
       account.balance = newAccountBalance;
 
-      let id = uuid();
-      reservedBalanceDatabase[id] = new ReservedBalance(id, args.input);
-      return reservedBalanceDatabase[id];
+      let idn = uuid();
+      reservedBalanceDatabase[idn] = new ReservedBalance(idn, args.input);
+      return reservedBalanceDatabase[idn];
     },
     updateReservedBalance: (obj: {}, args: { input: UpdateReservedBalanceInput }) => {
       const [reserveBalance] = Object
