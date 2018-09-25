@@ -47,11 +47,18 @@ const typeDefs = gql`
     amount: Float!
   }
 
+  input ReleaseReservedBalanceInput {
+    request: ID
+    account: ID!
+    context: String!
+  }
+
   type Mutation {
     createAccount(input: AccountInput): Account
     updateBalance(input: UpdateBalanceInput): Float!
     createReservedBalance(input: ReservedBalanceInput): ReservedBalance!
     updateReservedBalance(input: UpdateReservedBalanceInput): ReservedBalance!
+    releaseReservedBalance(input: ReleaseReservedBalanceInput): Boolean
   }
 `;
 
@@ -59,7 +66,7 @@ class Account {
   id: string;
   balance: number;
   availableBalance: number;
-  constructor(id, data: any){
+  constructor(id, data: any) {
     this.id = id;
     this.balance = data.balance;
     this.availableBalance = data.availableBalance;
@@ -67,13 +74,13 @@ class Account {
 }
 
 class ReservedBalance {
-  id: string
-  accountId: string
-  context: string
-  balance: number
-  constructor(id, data: any){
+  id: string;
+  accountId: string;
+  context: string;
+  balance: number;
+  constructor(id, data: any) {
     this.id = id;
-    this.accountId = data.accountId
+    this.accountId = data.accountId;
     this.context = data.context;
     this.balance = data.balance;
   }
@@ -108,6 +115,12 @@ interface UpdateReservedBalanceInput {
   amount: number
 }
 
+interface ReleaseReservedBalanceInput {
+  request: string
+  account: string
+  context: string
+}
+
 const resolvers = {
   Query: {
     account: (obj: {}, args: {id}) => {
@@ -125,14 +138,14 @@ const resolvers = {
     },
     updateBalance: (obj: {}, args: { input: UpdateAccountBalanceInput }) => {
       const account = accountDatabase[args.input.account];
-      
-      if(!account){
+
+      if (!account) {
         throw new Error ('User not found!');
       }
 
       const delta = account.balance + args.input.amount;
-      
-      if(delta < 0){
+
+      if (delta < 0) {
         throw new Error ('Insufficient Funds');
       }
 
@@ -143,15 +156,15 @@ const resolvers = {
       const account = accountDatabase[args.input.accountId];
       const reserveBalance = reservedBalanceDatabase[args.input.context];
 
-      if(!account){
+      if (!account) {
         throw new Error ('User not found!');
       }
 
-      if(reserveBalance){
+      if (reserveBalance) {
         throw new Error ('Context already exists');
       }
 
-      if(args.input.balance > account.balance){
+      if (args.input.balance > account.balance) {
         throw new Error ('Insufficient Funds');
       }
 
@@ -163,13 +176,12 @@ const resolvers = {
       return reservedBalanceDatabase[id];
     },
     updateReservedBalance: (obj: {}, args: { input: UpdateReservedBalanceInput }) => {
-      const reserveBalance = Object.keys(reservedBalanceDatabase)
-                              .map(id => reservedBalanceDatabase[id])
-                              .filter(reserved => reserved.accountId === args.input.account 
-                                && reserved.context === args.input.context);
-      
-      //console.log(reserveBalance);
-      if(!reserveBalance[0]){
+      const reserveBalance = Object
+        .keys(reservedBalanceDatabase)
+        .map(id => reservedBalanceDatabase[id])
+        .filter(reserved => reserved.accountId === args.input.account && reserved.context === args.input.context);
+
+      if (!reserveBalance[0]) {
         throw new Error ('Reserve Balance not Found!');
       }
 
@@ -177,6 +189,20 @@ const resolvers = {
       reserveBalance[0].balance = delta;
 
       return reserveBalance[0];
+    },
+    releaseReservedBalance: (obj: {}, args: { input: ReleaseReservedBalanceInput }) => {
+      const [reserveBalance] = Object
+        .keys(reservedBalanceDatabase)
+        .map(id => reservedBalanceDatabase[id])
+        .filter(reserved => reserved.accountId === args.input.account && reserved.context === args.input.context);
+
+      if (!reserveBalance) {
+        throw new Error ('Reserve Balance not Found!');
+      }
+
+      delete reservedBalanceDatabase[reserveBalance.id];
+
+      return true;
     }
   }
 };
