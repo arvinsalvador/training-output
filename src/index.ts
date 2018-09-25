@@ -176,19 +176,19 @@ const resolvers = {
       return reservedBalanceDatabase[id];
     },
     updateReservedBalance: (obj: {}, args: { input: UpdateReservedBalanceInput }) => {
-      const reserveBalance = Object
+      const [reserveBalance] = Object
         .keys(reservedBalanceDatabase)
         .map(id => reservedBalanceDatabase[id])
         .filter(reserved => reserved.accountId === args.input.account && reserved.context === args.input.context);
 
-      if (!reserveBalance[0]) {
+      if (!reserveBalance) {
         throw new Error ('Reserve Balance not Found!');
       }
 
-      const delta = reserveBalance[0].balance + args.input.amount;
-      reserveBalance[0].balance = delta;
+      const delta = reserveBalance.balance + args.input.amount;
+      reserveBalance.balance = delta;
 
-      return reserveBalance[0];
+      return reserveBalance;
     },
     releaseReservedBalance: (obj: {}, args: { input: ReleaseReservedBalanceInput }) => {
       const [reserveBalance] = Object
