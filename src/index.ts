@@ -194,6 +194,7 @@ const resolvers = {
       return reserveBalance;
     },
     releaseReservedBalance: (obj: {}, args: { input: ReleaseReservedBalanceInput }) => {
+      const account = accountDatabase[args.input.account];
       const [reserveBalance] = Object
         .keys(reservedBalanceDatabase)
         .map(id => reservedBalanceDatabase[id])
@@ -202,6 +203,9 @@ const resolvers = {
       if (!reserveBalance) {
         throw new Error ('Reserve Balance not Found!');
       }
+
+      const delta = account.balance + reserveBalance.balance;
+      account.balance = delta;
 
       delete reservedBalanceDatabase[reserveBalance.id];
 
