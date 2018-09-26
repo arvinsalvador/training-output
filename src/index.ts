@@ -207,7 +207,7 @@ const resolvers = {
       const account = accountDatabase[args.input.accountId];
       const [reserveBalance] = Object
         .keys(reservedBalanceDatabase)
-        .map(id => reservedBalanceDatabase[id])
+        .map(key => reservedBalanceDatabase[key])
         .filter(reserved => reserved.context === args.input.context);
 
       if (!account) {
@@ -225,9 +225,9 @@ const resolvers = {
       const newAccountBalance = account.balance - args.input.balance;
       account.balance = newAccountBalance;
 
-      const idn = uuid();
-      reservedBalanceDatabase[idn] = new ReservedBalance(idn, args.input);
-      return reservedBalanceDatabase[idn];
+      let id = uuid();
+      reservedBalanceDatabase[id] = new ReservedBalance(id, args.input);
+      return reservedBalanceDatabase[id];
     },
     updateReservedBalance: (obj: {}, args: { input: UpdateReservedBalanceInput }) => {
       const [reserveBalance] = Object
