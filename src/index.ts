@@ -66,7 +66,7 @@ class Account {
   id: string;
   balance: number;
   availableBalance: number;
-  constructor(id, data: any) {
+  constructor(id, data: { balance, availableBalance }) {
     this.id = id;
     this.balance = data.balance;
     this.availableBalance = data.availableBalance;
@@ -78,7 +78,7 @@ class ReservedBalance {
   accountId: string;
   context: string;
   balance: number;
-  constructor(id, data: any) {
+  constructor(id, data: { accountId, context, balance }) {
     this.id = id;
     this.accountId = data.accountId;
     this.context = data.context;
