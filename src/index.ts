@@ -16,6 +16,13 @@ const typeDefs = gql`
     balance: Float
   }
 
+  type VirtualBalance {
+    id: ID
+    accountId: String
+    context: String
+    balance: Float
+  }
+
   type Query {
     account(id: ID!): Account
     reservedBalance(id: ID!): ReservedBalance
@@ -53,12 +60,20 @@ const typeDefs = gql`
     context: String!
   }
 
+  input VirtualBalanceInput {
+    id: ID
+    accountId: String!
+    context: String!
+    balance: Float!
+  }
+
   type Mutation {
     createAccount(input: AccountInput): Account
     updateBalance(input: UpdateBalanceInput): Float!
     createReservedBalance(input: ReservedBalanceInput): ReservedBalance!
     updateReservedBalance(input: UpdateReservedBalanceInput): ReservedBalance!
     releaseReservedBalance(input: ReleaseReservedBalanceInput): Boolean
+    createVirtualBalance(input: VirtualBalanceInput): VirtualBalance!
   }
 `;
 
@@ -86,8 +101,22 @@ class ReservedBalance {
   }
 }
 
+class VirtualBalance {
+  id: string;
+  accountId: string;
+  context: string;
+  balance: number;
+  constructor(id, data: { accountId, context, balance }) {
+    this.id = id;
+    this.accountId = data.accountId;
+    this.context = data.context;
+    this.balance = data.balance;
+  }
+}
+
 const accountDatabase: { [id: string]: Account } = {};
 const reservedBalanceDatabase: { [id: string]: ReservedBalance } = {};
+const virtualBalanceDatabase: { [id: string]: VirtualBalance } = {};
 
 interface AccountBalanceInput {
   id: string
@@ -119,6 +148,13 @@ interface ReleaseReservedBalanceInput {
   request: string
   account: string
   context: string
+}
+
+interface CreateVirtualBalanceInput {
+  id: string
+  accountId: string
+  context: string
+  balance: number
 }
 
 const resolvers = {
@@ -174,7 +210,7 @@ const resolvers = {
       const newAccountBalance = account.balance - args.input.balance;
       account.balance = newAccountBalance;
 
-      let idn = uuid();
+      const idn = uuid();
       reservedBalanceDatabase[idn] = new ReservedBalance(idn, args.input);
       return reservedBalanceDatabase[idn];
     },
@@ -210,7 +246,30 @@ const resolvers = {
       delete reservedBalanceDatabase[reserveBalance.id];
 
       return true;
-    }
+    },
+    createVirtualBalance: (obj: {}, args: { input: CreateVirtualBalanceInput }) => {
+      const account = accountDatabase[args.input.accountId];
+      const [virtualBalance] = Object
+        .keys(virtualBalanceDatabase)
+        .map(key => virtualBalanceDatabase[key])
+        .filter(virtual => virtual.context === args.input.context);
+
+      if (!account) {
+        throw new Error ('User not found!');
+      }
+
+      if (virtualBalance) {
+        throw new Error ('Context already exists');
+      }
+
+      if (args.input.balance <= 0) {
+        throw new Error ('Invalid Amount');
+      }
+
+      const id = uuid();
+      virtualBalanceDatabase[id] = new VirtualBalance(id, args.input);
+      return virtualBalanceDatabase[id];
+    },
   }
 };
 
