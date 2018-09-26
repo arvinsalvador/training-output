@@ -67,6 +67,13 @@ const typeDefs = gql`
     balance: Float!
   }
 
+  input UpdateVirtualBalanceInput {
+    request: ID
+    account: ID!
+    context: String!
+    amount: Float!
+  }
+
   type Mutation {
     createAccount(input: AccountInput): Account
     updateBalance(input: UpdateBalanceInput): Float!
@@ -74,6 +81,7 @@ const typeDefs = gql`
     updateReservedBalance(input: UpdateReservedBalanceInput): ReservedBalance!
     releaseReservedBalance(input: ReleaseReservedBalanceInput): Boolean
     createVirtualBalance(input: VirtualBalanceInput): VirtualBalance!
+    updateVirtualBalance(input: UpdateVirtualBalanceInput): VirtualBalance!
   }
 `;
 
@@ -155,6 +163,13 @@ interface CreateVirtualBalanceInput {
   accountId: string
   context: string
   balance: number
+}
+
+interface UpdateVirtualBalanceInput {
+  request: string
+  account: string
+  context: string
+  amount: number
 }
 
 const resolvers = {
@@ -270,6 +285,25 @@ const resolvers = {
       virtualBalanceDatabase[id] = new VirtualBalance(id, args.input);
       return virtualBalanceDatabase[id];
     },
+    updateVirtualBalance: (obj: {}, args: { input: UpdateVirtualBalanceInput }) => {
+      const [virtualBalance] = Object
+        .keys(virtualBalanceDatabase)
+        .map(id => virtualBalanceDatabase[id])
+        .filter(virtual => virtual.accountId === args.input.account && virtual.context === args.input.context);
+
+      if (!virtualBalance) {
+        throw new Error ('Virtual Balance not Found!');
+      }
+
+      if (args.input.amount <= 0) {
+        throw new Error ('Invalid Amount');
+      }
+
+      const delta = virtualBalance.balance + args.input.amount;
+      virtualBalance.balance = delta;
+
+      return virtualBalance;
+    }
   }
 };
 
