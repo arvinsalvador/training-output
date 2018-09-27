@@ -27,6 +27,7 @@ const typeDefs = gql`
     account(id: ID!): Account
     reservedBalance(id: ID!): ReservedBalance
     virtualBalance(id: ID!): VirtualBalance
+    reservedBalances(account: ID!): [ReservedBalance]!
   }
 
   input AccountInput {
@@ -209,6 +210,13 @@ const resolvers = {
     },
     virtualBalance: (obj: {}, args: {id}) => {
       return virtualBalanceDatabase[args.id];
+    },
+    reservedBalances: (obj: {}, args: {account}) => {
+      const reserveBalances = Object.keys(reservedBalanceDatabase)
+        .map(id => reservedBalanceDatabase[id])
+        .filter(reserved => reserved.accountId === args.account);
+
+      return reserveBalances;
     }
   },
   Mutation: {
