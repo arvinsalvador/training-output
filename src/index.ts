@@ -80,6 +80,12 @@ const typeDefs = gql`
     context: String!
   }
 
+  input CommitVirtualBalanceInput {
+    request: ID
+    account: ID!
+    context: String!
+  }
+
   type Mutation {
     createAccount(input: AccountInput): Account
     updateBalance(input: UpdateBalanceInput): Float!
@@ -89,6 +95,7 @@ const typeDefs = gql`
     createVirtualBalance(input: VirtualBalanceInput): VirtualBalance!
     updateVirtualBalance(input: UpdateVirtualBalanceInput): VirtualBalance!
     cancelVirtualBalance(input: CancelVirtualBalanceInput): Boolean
+    commitVirtualBalance(input: CommitVirtualBalanceInput): Boolean
   }
 `;
 
@@ -180,6 +187,12 @@ interface UpdateVirtualBalanceInput {
 }
 
 interface CancelVirtualBalanceInput {
+  request: string
+  account: string
+  context: string
+}
+
+interface CommitVirtualBalanceInput {
   request: string
   account: string
   context: string
@@ -326,6 +339,24 @@ const resolvers = {
       if (!virtualBalance) {
         throw new Error ('Virtual Balance not Found!');
       }
+
+      delete virtualBalanceDatabase[virtualBalance.id];
+
+      return true;
+    },
+    commitVirtualBalance: (obj: {}, args: { input: CommitVirtualBalanceInput }) => {
+      const account = accountDatabase[args.input.account];
+      const [virtualBalance] = Object
+        .keys(virtualBalanceDatabase)
+        .map(id => virtualBalanceDatabase[id])
+        .filter(virtual => virtual.accountId === args.input.account && virtual.context === args.input.context);
+
+      if (!virtualBalance) {
+        throw new Error ('Virtual Balance not Found!');
+      }
+
+      const delta = account.balance + virtualBalance.balance;
+      account.balance = delta;
 
       delete virtualBalanceDatabase[virtualBalance.id];
 
