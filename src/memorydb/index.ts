@@ -1,0 +1,1 @@
+export { default as accountDatabase } from './account-database';
