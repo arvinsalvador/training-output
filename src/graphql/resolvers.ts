@@ -40,6 +40,11 @@ const resolvers = {
       const balances = new Balances('', args.input, BalanceType.TYPES.VIRTUAL);
       return balances.save();
     },
+    updateVirtualBalance: (obj: {}, args: { input: API.Input.UpdateVirtualBalanceInput }) => {
+      const balances = Balances.getBalance(args.input.account, args.input.context, BalanceType.TYPES.VIRTUAL);
+      balances.update(args.input);
+      return balances;
+    },
   }
 };
 

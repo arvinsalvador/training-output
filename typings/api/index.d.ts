@@ -41,6 +41,14 @@ declare namespace API {
       context: string
       balance: number
     }
+
+    interface UpdateVirtualBalanceInput {
+      request: string
+      account: string
+      context: string
+      amount: number
+      type: string
+    }
   }
 
   namespace Output {
