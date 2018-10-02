@@ -27,6 +27,15 @@ const resolvers = {
       balances.update(args.input);
       return balances;
     },
+    releaseReservedBalance: (obj: {}, args: { input: API.Input.ReleaseReservedBalanceInput }) => {
+      const balances = Balances.getBalance(args.input.account, args.input.context, BalanceType.TYPES.RESERVE);
+      const account = Account.getAccount(args.input.account);
+
+      const delta = account.balance + balances.balance;
+      account.balance = delta;
+
+      return balances.delete(balances.id);
+    },
   }
 };
 

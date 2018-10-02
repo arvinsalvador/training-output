@@ -90,4 +90,9 @@ export default class Balances {
     this.balance = delta;
     return this;
   }
+
+  delete(id: string) {
+    delete balanceDatabase[id];
+    return true;
+  }
 }

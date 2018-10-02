@@ -29,6 +29,12 @@ declare namespace API {
       type: string
     }
 
+    interface ReleaseReservedBalanceInput {
+      request: string
+      account: string
+      context: string
+    }
+
   }
 
   namespace Output {
