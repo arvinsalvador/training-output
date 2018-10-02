@@ -85,8 +85,10 @@ export default class Balances {
     return balanceInfo;
   }
 
-  static getBalanceInfo(id) {
-    const balance = balanceDatabase[id];
+  static getBalanceInfo(id, type) {
+    const [balance] = Object.keys(balanceDatabase)
+      .map(key => balanceDatabase[key])
+      .filter(balances => balances.id === id && balances.type === type);
 
     return balance || null;
   }
