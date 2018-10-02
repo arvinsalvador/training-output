@@ -25,6 +25,9 @@ const resolvers = {
       const balances = new Balances(id, args.input, BalanceType.TYPES.RESERVE);
       return balances.save();
     },
+    updateReservedBalance: (obj: {}, args: { input: API.Input.UpdateReservedBalanceInput }) => {
+      return Balances.update(BalanceType.TYPES.RESERVE, args.input);
+    },
   }
 };
 

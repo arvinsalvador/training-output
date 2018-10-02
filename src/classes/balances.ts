@@ -66,4 +66,22 @@ export default class Balances {
 
     return balanceDatabase[this.id];
   }
+
+  static update(type: string, input: { request, account, context, amount }) {
+    const [balanceInfo] = Object.keys(balanceDatabase)
+      .map(key => balanceDatabase[key])
+      .filter(balances => balances.account === input.account
+        && balances.context === input.context && balances.type === type);
+
+    if (!balanceInfo) {
+      throw new InvalidRequestError('', {
+        balanceExist: false
+      });
+    }
+
+    const delta = balanceInfo.balance + input.amount;
+    balanceInfo.balance = delta;
+
+    return balanceInfo;
+  }
 }

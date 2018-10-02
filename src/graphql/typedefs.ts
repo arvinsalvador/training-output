@@ -40,6 +40,13 @@ const typeDefs = gql`
     balance: Float!
   }
 
+  input UpdateReservedBalanceInput {
+    request: ID
+    account: ID!
+    context: String!
+    amount: Float!
+  }
+
   type Query {
     getAccount(id: ID!): Account
   }
@@ -48,6 +55,7 @@ const typeDefs = gql`
     createAccount(input: CreateAccountInput): Account
     updateBalance(input: UpdateBalanceInput): Float!
     createReservedBalance(input: CreateReservedBalanceInput): ReservedBalance!
+    updateReservedBalance(input: UpdateReservedBalanceInput): ReservedBalance!
   }
 `;
 
