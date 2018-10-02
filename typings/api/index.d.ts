@@ -18,7 +18,6 @@ declare namespace API {
       account: string
       context: string
       amount: number
-      type: string
     }
 
     interface ReleaseReservedBalanceInput {
@@ -32,7 +31,6 @@ declare namespace API {
       account: string
       context: string
       balance: number
-      type: string
     }
 
     interface UpdateVirtualBalanceInput {
@@ -40,21 +38,18 @@ declare namespace API {
       account: string
       context: string
       amount: number
-      type: string
     }
 
     interface CancelVirtualBalanceInput {
       request: string
       account: string
       context: string
-      type: string
     }
 
     interface CommitVirtualBalanceInput {
       request: string
       account: string
       context: string
-      type: string
     }
   }
 
