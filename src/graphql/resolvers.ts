@@ -11,6 +11,9 @@ const resolvers = {
     virtualBalance: (obj: {}, args: {id}) => {
       return Balances.getBalanceInfo(args.id, BalanceType.TYPES.VIRTUAL);
     },
+    reservedBalances: (obj: {}, args: {account}) => {
+      return Balances.getBalances(args.account, BalanceType.TYPES.RESERVE);
+    },
   },
   Mutation: {
     createAccount: (obj: {}, args: { input: API.Input.CreateAccountInput }) => {

@@ -93,6 +93,14 @@ export default class Balances {
     return balance || null;
   }
 
+  static getBalances(account, type) {
+    const balance = Object.keys(balanceDatabase)
+      .map(key => balanceDatabase[key])
+      .filter(balances => balances.account === account && balances.type === type);
+
+    return balance || null;
+  }
+
   update(input: { amount }) {
     const delta = this.balance + input.amount;
     this.balance = delta;

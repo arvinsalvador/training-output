@@ -91,6 +91,7 @@ const typeDefs = gql`
     getAccount(id: ID!): Account
     reservedBalance(id: ID!): ReservedBalance
     virtualBalance(id: ID!): VirtualBalance
+    reservedBalances(account: ID!): [ReservedBalance]!
   }
 
   type Mutation {
