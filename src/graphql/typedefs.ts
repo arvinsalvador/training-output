@@ -21,6 +21,14 @@ const typeDefs = gql`
     type: String
   }
 
+  type VirtualBalance {
+    id: ID
+    account: String
+    context: String
+    balance: Float
+    type: String
+  }
+
   input CreateAccountInput {
     id: ID
     balance: Float!
@@ -53,6 +61,13 @@ const typeDefs = gql`
     context: String!
   }
 
+  input CreateVirtualBalanceInput {
+    id: ID
+    account: String!
+    context: String!
+    balance: Float!
+  }
+
   type Query {
     getAccount(id: ID!): Account
   }
@@ -63,6 +78,7 @@ const typeDefs = gql`
     createReservedBalance(input: CreateReservedBalanceInput): ReservedBalance!
     updateReservedBalance(input: UpdateReservedBalanceInput): ReservedBalance!
     releaseReservedBalance(input: ReleaseReservedBalanceInput): Boolean
+    createVirtualBalance(input: CreateVirtualBalanceInput): VirtualBalance!
   }
 `;
 

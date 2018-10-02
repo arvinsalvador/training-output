@@ -36,6 +36,10 @@ const resolvers = {
 
       return balances.delete(balances.id);
     },
+    createVirtualBalance: (obj: {}, args: { input: API.Input.CreateVirtualBalanceInput }) => {
+      const balances = new Balances('', args.input, BalanceType.TYPES.VIRTUAL);
+      return balances.save();
+    },
   }
 };
 
