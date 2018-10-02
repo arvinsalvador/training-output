@@ -13,14 +13,6 @@ declare namespace API {
       amount: number
     }
 
-    interface CreateVirtualBalanceInput {
-      id: string
-      account: string
-      context: string
-      balance: number
-      type: string
-    }
-
     interface UpdateReservedBalanceInput {
       request: string
       account: string
@@ -40,6 +32,7 @@ declare namespace API {
       account: string
       context: string
       balance: number
+      type: string
     }
 
     interface UpdateVirtualBalanceInput {
