@@ -38,7 +38,6 @@ const typeDefs = gql`
     account: String!
     context: String!
     balance: Float!
-    type: BalanceType!
   }
 
   type Query {
