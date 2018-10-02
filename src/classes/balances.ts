@@ -1,3 +1,5 @@
+import * as uuid from 'uuid/v4';
+
 import { InvalidRequestError, InsufficientFundError } from './../errors';
 import { accountDatabase, balanceDatabase } from './../memorydb/index';
 import { BalanceType } from './index';
@@ -10,7 +12,7 @@ export default class Balances {
   balance: number;
   type: string;
 
-  constructor(id, data: { account, context, balance }, type) {
+  constructor(id = '', data: { account, context, balance }, type) {
     this.id = id;
     this.account = data.account;
     this.context = data.context;
@@ -58,13 +60,14 @@ export default class Balances {
 
     }
 
+    this.id = uuid();
     balanceDatabase[this.id] = new Balances(this.id, {
       account: this.account,
       context: this.context,
       balance: this.balance
     }, balanceType);
 
-    return balanceDatabase[this.id];
+    return Balances.getBalance(this.account, this.context, balanceType);
   }
 
   static getBalance(account, context, type) {

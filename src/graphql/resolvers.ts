@@ -1,5 +1,4 @@
 import { Account, Balances, BalanceType } from './../classes/index';
-import * as uuid from 'uuid/v4';
 
 const resolvers = {
   Query: {
@@ -20,8 +19,7 @@ const resolvers = {
       );
     },
     createReservedBalance: (obj: {}, args: { input: API.Input.CreateVirtualBalanceInput }) => {
-      let id = uuid();
-      const balances = new Balances(id, args.input, BalanceType.TYPES.RESERVE);
+      const balances = new Balances('', args.input, BalanceType.TYPES.RESERVE);
       return balances.save();
     },
     updateReservedBalance: (obj: {}, args: { input: API.Input.UpdateReservedBalanceInput }) => {
