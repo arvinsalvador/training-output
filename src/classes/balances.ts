@@ -85,6 +85,12 @@ export default class Balances {
     return balanceInfo;
   }
 
+  static getBalanceInfo(id) {
+    const balance = balanceDatabase[id];
+
+    return balance || null;
+  }
+
   update(input: { amount }) {
     const delta = this.balance + input.amount;
     this.balance = delta;

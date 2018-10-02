@@ -89,6 +89,7 @@ const typeDefs = gql`
 
   type Query {
     getAccount(id: ID!): Account
+    reservedBalance(id: ID!): ReservedBalance
   }
 
   type Mutation {

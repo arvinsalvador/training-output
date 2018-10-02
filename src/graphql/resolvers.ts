@@ -4,7 +4,10 @@ const resolvers = {
   Query: {
     getAccount: (obj: {}, args: { id }) => {
       return Account.getAccount(args.id);
-    }
+    },
+    reservedBalance: (obj: {}, args: { id }) => {
+      return Balances.getBalanceInfo(args.id);
+    },
   },
   Mutation: {
     createAccount: (obj: {}, args: { input: API.Input.CreateAccountInput }) => {
