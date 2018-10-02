@@ -6,7 +6,7 @@ const resolvers = {
     createAccount: (obj: {}, args: { input: API.Input.CreateAccountInput }) => {
       let id = uuid();
       const account = new Account(id, args.input);
-      return account.createAccount();
+      return account.save();
     }
   }
 };

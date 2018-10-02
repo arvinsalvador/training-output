@@ -11,19 +11,19 @@ export default class Account {
     this.id = id;
     this.balance = data.balance;
     this.availableBalance = data.availableBalance;
-  }
-
-  createAccount() {
 
     if (this.balance < 0) {
       throw new InvalidRequestError('', {
         invalidAmount: true
       });
     }
+  }
 
-    const argInputs = { balance: this.balance, availableBalance: this.availableBalance };
-
-    accountDatabase[this.id] = new Account(this.id, argInputs);
+  save() {
+    accountDatabase[this.id] = new Account(this.id, {
+      balance: this.balance,
+      availableBalance: this.availableBalance
+    });
     return accountDatabase[this.id];
   }
 }
