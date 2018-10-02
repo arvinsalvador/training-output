@@ -25,7 +25,9 @@ const resolvers = {
       return balances.save();
     },
     updateReservedBalance: (obj: {}, args: { input: API.Input.UpdateReservedBalanceInput }) => {
-      return Balances.update(BalanceType.TYPES.RESERVE, args.input);
+      const balances = Balances.getBalance(args.input.account, args.input.context, BalanceType.TYPES.RESERVE);
+      balances.update(args.input);
+      return balances;
     },
   }
 };

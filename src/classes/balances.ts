@@ -67,11 +67,11 @@ export default class Balances {
     return balanceDatabase[this.id];
   }
 
-  static update(type: string, input: { request, account, context, amount }) {
+  static getBalance(account, context, type) {
     const [balanceInfo] = Object.keys(balanceDatabase)
       .map(key => balanceDatabase[key])
-      .filter(balances => balances.account === input.account
-        && balances.context === input.context && balances.type === type);
+      .filter(balances => balances.account === account
+        && balances.context === context && balances.type === type);
 
     if (!balanceInfo) {
       throw new InvalidRequestError('', {
@@ -79,9 +79,12 @@ export default class Balances {
       });
     }
 
-    const delta = balanceInfo.balance + input.amount;
-    balanceInfo.balance = delta;
-
     return balanceInfo;
+  }
+
+  update(input: { amount }) {
+    const delta = this.balance + input.amount;
+    this.balance = delta;
+    return this;
   }
 }
