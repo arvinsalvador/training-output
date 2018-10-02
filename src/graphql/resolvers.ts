@@ -12,11 +12,8 @@ const resolvers = {
       return account.save();
     },
     updateBalance: (obj: {}, args: { input: API.Input.UpdateBalanceInput }) => {
-      return Account.updateBalance(
-        args.input.request,
-        args.input.account,
-        args.input.amount
-      );
+      const account = Account.getAccount(args.input.account);
+      return account.update(args.input);
     },
     createReservedBalance: (obj: {}, args: { input: API.Input.CreateVirtualBalanceInput }) => {
       const balances = new Balances('', args.input, BalanceType.TYPES.RESERVE);

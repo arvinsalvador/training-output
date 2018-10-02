@@ -31,34 +31,29 @@ export default class Account {
   }
 
   static getAccount(id: string) {
-    return accountDatabase[id] || null;
-  }
 
-  static updateBalance(request: string, account: string, amount: number) {
+    const account = accountDatabase[id];
 
-    if (!request) {
-      //Throw error if request is empty.
-      //Not enough knowledge what request parameter will do.
-      throw new InvalidRequestError('', {
-        invalidRequest: true
-      });
-    }
-
-    const accountInfo = accountDatabase[account];
-
-    if (!accountInfo) {
+    if (!account) {
       throw new InvalidRequestError('', {
         accountExist: false
       });
     }
+    return account;
+  }
 
-    const delta = accountInfo.balance + amount;
+  update(input: { account, amount }) {
+
+    const delta = this.balance + input.amount;
 
     if (delta < 0) {
-      throw new InsufficientFundError({account});
+      throw new InsufficientFundError({
+        account: input.account,
+        insufficientFund: true,
+      });
     }
 
-    accountInfo.balance = delta;
+    this.balance = delta;
     return delta;
   }
 }
