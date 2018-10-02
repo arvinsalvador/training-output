@@ -6,7 +6,7 @@ const resolvers = {
       return Account.getAccount(args.id);
     },
     reservedBalance: (obj: {}, args: { id }) => {
-      return Balances.getBalanceInfo(args.id);
+      return Balances.getBalanceInfo(args.id, BalanceType.TYPES.RESERVE);
     },
     virtualBalance: (obj: {}, args: {id}) => {
       return Balances.getBalanceInfo(args.id, BalanceType.TYPES.VIRTUAL);
