@@ -50,6 +50,15 @@ const resolvers = {
 
       return balances.delete(balances.id);
     },
+    commitVirtualBalance: (obj: {}, args: { input: API.Input.CommitVirtualBalanceInput }) => {
+      const balances = Balances.getBalance(args.input.account, args.input.context, BalanceType.TYPES.VIRTUAL);
+      const account = Account.getAccount(args.input.account);
+
+      const delta = account.balance + balances.balance;
+      account.balance = delta;
+
+      return balances.delete(balances.id);
+    }
   }
 };
 

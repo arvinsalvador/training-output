@@ -56,6 +56,13 @@ declare namespace API {
       context: string
       type: string
     }
+
+    interface CommitVirtualBalanceInput {
+      request: string
+      account: string
+      context: string
+      type: string
+    }
   }
 
   namespace Output {

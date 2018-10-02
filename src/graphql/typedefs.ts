@@ -81,6 +81,12 @@ const typeDefs = gql`
     context: String!
   }
 
+  input CommitVirtualBalanceInput {
+    request: ID
+    account: ID!
+    context: String!
+  }
+
   type Query {
     getAccount(id: ID!): Account
   }
@@ -94,6 +100,7 @@ const typeDefs = gql`
     createVirtualBalance(input: CreateVirtualBalanceInput): VirtualBalance!
     updateVirtualBalance(input: UpdateVirtualBalanceInput): VirtualBalance!
     cancelVirtualBalance(input: CancelVirtualBalanceInput): Boolean
+    commitVirtualBalance(input: CommitVirtualBalanceInput): Boolean
   }
 `;
 
