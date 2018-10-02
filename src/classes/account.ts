@@ -26,4 +26,8 @@ export default class Account {
     });
     return accountDatabase[this.id];
   }
+
+  static getAccount(id: string) {
+    return accountDatabase[id] || null;
+  }
 }
