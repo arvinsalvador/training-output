@@ -9,8 +9,7 @@ const resolvers = {
   },
   Mutation: {
     createAccount: (obj: {}, args: { input: API.Input.CreateAccountInput }) => {
-      let id = uuid();
-      const account = new Account(id, args.input);
+      const account = new Account('', args.input);
       return account.save();
     },
     updateBalance: (obj: {}, args: { input: API.Input.UpdateBalanceInput }) => {

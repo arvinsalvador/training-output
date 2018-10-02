@@ -1,6 +1,7 @@
-import { InvalidRequestError } from './../errors';
+import * as uuid from 'uuid/v4';
+
+import { InvalidRequestError, InsufficientFundError } from './../errors';
 import { accountDatabase } from './../memorydb/index';
-import InsufficientFundErrror from '../errors/insufficient-fund-error';
 
 export default class Account {
 
@@ -8,7 +9,7 @@ export default class Account {
   balance: number;
   availableBalance: number;
 
-  constructor(id, data: { balance, availableBalance }) {
+  constructor(id = '', data: { balance, availableBalance }) {
     this.id = id;
     this.balance = data.balance;
     this.availableBalance = data.availableBalance;
@@ -21,11 +22,12 @@ export default class Account {
   }
 
   save() {
+    this.id = uuid();
     accountDatabase[this.id] = new Account(this.id, {
       balance: this.balance,
       availableBalance: this.availableBalance
     });
-    return accountDatabase[this.id];
+    return Account.getAccount(this.id);
   }
 
   static getAccount(id: string) {
@@ -53,7 +55,7 @@ export default class Account {
     const delta = accountInfo.balance + amount;
 
     if (delta < 0) {
-      throw new InsufficientFundErrror({account});
+      throw new InsufficientFundError({account});
     }
 
     accountInfo.balance = delta;
