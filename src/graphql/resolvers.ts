@@ -45,6 +45,11 @@ const resolvers = {
       balances.update(args.input);
       return balances;
     },
+    cancelVirtualBalance: (obj: {}, args: { input: API.Input.CancelVirtualBalanceInput }) => {
+      const balances = Balances.getBalance(args.input.account, args.input.context, BalanceType.TYPES.VIRTUAL);
+
+      return balances.delete(balances.id);
+    },
   }
 };
 

@@ -75,6 +75,12 @@ const typeDefs = gql`
     amount: Float!
   }
 
+  input CancelVirtualBalanceInput {
+    request: ID
+    account: ID!
+    context: String!
+  }
+
   type Query {
     getAccount(id: ID!): Account
   }
@@ -87,6 +93,7 @@ const typeDefs = gql`
     releaseReservedBalance(input: ReleaseReservedBalanceInput): Boolean
     createVirtualBalance(input: CreateVirtualBalanceInput): VirtualBalance!
     updateVirtualBalance(input: UpdateVirtualBalanceInput): VirtualBalance!
+    cancelVirtualBalance(input: CancelVirtualBalanceInput): Boolean
   }
 `;
 

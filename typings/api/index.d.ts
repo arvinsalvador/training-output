@@ -49,6 +49,13 @@ declare namespace API {
       amount: number
       type: string
     }
+
+    interface CancelVirtualBalanceInput {
+      request: string
+      account: string
+      context: string
+      type: string
+    }
   }
 
   namespace Output {
