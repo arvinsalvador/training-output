@@ -12,7 +12,14 @@ const resolvers = {
       let id = uuid();
       const account = new Account(id, args.input);
       return account.save();
-    }
+    },
+    updateBalance: (obj: {}, args: { input: API.Input.UpdateBalanceInput }) => {
+      return Account.updateBalance(
+        args.input.request,
+        args.input.account,
+        args.input.amount
+      );
+    },
   }
 };
 

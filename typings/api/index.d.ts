@@ -5,6 +5,11 @@ declare namespace API {
       balance: number
       availableBalance: number
     }
+    interface UpdateBalanceInput {
+      request: string
+      account: string
+      amount: number
+    }
   }
 
   namespace Output {

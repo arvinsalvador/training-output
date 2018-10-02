@@ -13,12 +13,19 @@ const typeDefs = gql`
     availableBalance: Float!
   }
 
+  input UpdateBalanceInput {
+    request: ID!
+    account: ID!
+    amount: Float
+  }
+
   type Query {
     getAccount(id: ID!): Account
   }
 
   type Mutation {
     createAccount(input: CreateAccountInput): Account
+    updateBalance(input: UpdateBalanceInput): Float!
   }
 `;
 

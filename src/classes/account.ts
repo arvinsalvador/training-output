@@ -1,5 +1,6 @@
 import { InvalidRequestError } from './../errors';
 import { accountDatabase } from './../memorydb/index';
+import InsufficientFundErrror from '../errors/insufficient-fund-error';
 
 export default class Account {
 
@@ -29,5 +30,33 @@ export default class Account {
 
   static getAccount(id: string) {
     return accountDatabase[id] || null;
+  }
+
+  static updateBalance(request: string, account: string, amount: number) {
+
+    if (!request) {
+      //Throw error if request is empty.
+      //Not enough knowledge what request parameter will do.
+      throw new InvalidRequestError('', {
+        invalidRequest: true
+      });
+    }
+
+    const accountInfo = accountDatabase[account];
+
+    if (!accountInfo) {
+      throw new InvalidRequestError('', {
+        accountExist: false
+      });
+    }
+
+    const delta = accountInfo.balance + amount;
+
+    if (delta < 0) {
+      throw new InsufficientFundErrror({account});
+    }
+
+    accountInfo.balance = delta;
+    return delta;
   }
 }
