@@ -43,7 +43,7 @@ const resolvers = {
       const delta = account.balance + balances.balance;
       account.balance = delta;
 
-      return balances.delete(balances.id);
+      return Balances.deleteRecord(balances.id);
     },
     createVirtualBalance: (obj: {}, args: { input: API.Input.CreateVirtualBalanceInput }) => {
       const balances = new Balances(args.input, BalanceType.TYPES.VIRTUAL);
@@ -57,7 +57,7 @@ const resolvers = {
     cancelVirtualBalance: (obj: {}, args: { input: API.Input.CancelVirtualBalanceInput }) => {
       const balances = Balances.getBalance(args.input.account, args.input.context, BalanceType.TYPES.VIRTUAL);
 
-      return balances.delete(balances.id);
+      return Balances.deleteRecord(balances.id);
     },
     commitVirtualBalance: (obj: {}, args: { input: API.Input.CommitVirtualBalanceInput }) => {
       const balances = Balances.getBalance(args.input.account, args.input.context, BalanceType.TYPES.VIRTUAL);
@@ -66,7 +66,7 @@ const resolvers = {
       const delta = account.balance + balances.balance;
       account.balance = delta;
 
-      return balances.delete(balances.id);
+      return Balances.deleteRecord(balances.id);
     }
   }
 };
