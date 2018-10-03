@@ -28,7 +28,7 @@ const resolvers = {
       return account.update(args.input);
     },
     createReservedBalance: (obj: {}, args: { input: API.Input.CreateVirtualBalanceInput }) => {
-      const balances = new Balances('', args.input, BalanceType.TYPES.RESERVE);
+      const balances = new Balances(args.input, BalanceType.TYPES.RESERVE);
       return balances.save();
     },
     updateReservedBalance: (obj: {}, args: { input: API.Input.UpdateReservedBalanceInput }) => {
@@ -46,7 +46,7 @@ const resolvers = {
       return balances.delete(balances.id);
     },
     createVirtualBalance: (obj: {}, args: { input: API.Input.CreateVirtualBalanceInput }) => {
-      const balances = new Balances('', args.input, BalanceType.TYPES.VIRTUAL);
+      const balances = new Balances(args.input, BalanceType.TYPES.VIRTUAL);
       return balances.save();
     },
     updateVirtualBalance: (obj: {}, args: { input: API.Input.UpdateVirtualBalanceInput }) => {

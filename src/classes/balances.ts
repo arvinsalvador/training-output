@@ -12,8 +12,8 @@ export default class Balances {
   balance: number;
   type: string;
 
-  constructor(id = '', data: { account, context, balance }, type) {
-    this.id = id;
+  constructor(data: { id, account, context, balance }, type) {
+    this.id = data.id;
     this.account = data.account;
     this.context = data.context;
     this.balance = data.balance;
@@ -61,7 +61,8 @@ export default class Balances {
     }
 
     this.id = uuid();
-    balanceDatabase[this.id] = new Balances(this.id, {
+    balanceDatabase[this.id] = new Balances({
+      id: this.id,
       account: this.account,
       context: this.context,
       balance: this.balance
