@@ -9,8 +9,8 @@ export default class Account {
   balance: number;
   availableBalance: number;
 
-  constructor(id = '', data: { balance, availableBalance }) {
-    this.id = id;
+  constructor(data: {id, balance, availableBalance }) {
+    this.id = data.id;
     this.balance = data.balance;
     this.availableBalance = data.availableBalance;
 
@@ -23,7 +23,8 @@ export default class Account {
 
   save() {
     this.id = uuid();
-    accountDatabase[this.id] = new Account(this.id, {
+    accountDatabase[this.id] = new Account({
+      id: this.id,
       balance: this.balance,
       availableBalance: this.availableBalance
     });

@@ -20,7 +20,7 @@ const resolvers = {
   },
   Mutation: {
     createAccount: (obj: {}, args: { input: API.Input.CreateAccountInput }) => {
-      const account = new Account('', args.input);
+      const account = new Account(args.input);
       return account.save();
     },
     updateBalance: (obj: {}, args: { input: API.Input.UpdateBalanceInput }) => {
