@@ -1,16 +1,15 @@
 import { expect } from 'chai';
-import { v4 as uuid } from 'uuid';
 
 import { Account } from './../../src/classes';
-import { InvalidRequestError } from '../../src/errors';
+import { InvalidRequestError, InsufficientFundError } from '../../src/errors';
 
 describe('Account Class', () => {
   describe('constructor', () => {
     let instance;
     let id;
     beforeEach(() => {
-      id = uuid();
       instance = new Account({ balance: 10, availableBalance: 100 });
+      id = instance.id;
     });
 
     it('should set id field', () => {
@@ -45,8 +44,8 @@ describe('Account Class', () => {
       let instance;
       let result;
       beforeEach(() => {
-        id = uuid();
         instance = new Account({ balance: 100, availableBalance: 100 });
+        id = instance.id;
         result = instance.save();
       });
 
@@ -61,6 +60,27 @@ describe('Account Class', () => {
 
     describe('Given account does not exist', () => {
       it('should throw an error');
+    });
+  });
+
+  describe('update', () => {
+    let instance;
+    beforeEach(() => {
+      instance = new Account({ balance: 0, availableBalance: 0 });
+    });
+
+    describe('Given delta is less than 0', () => {
+      it('should throw an error', () => {
+        expect(() => {
+          instance.update(-1);
+        }).to.throw(InsufficientFundError);
+      });
+    });
+
+    describe('Given delta is greater than 0', () => {
+      it('should return value of the delta', () => {
+        expect(instance.update(50)).to.equal(50);
+      });
     });
   });
 });
