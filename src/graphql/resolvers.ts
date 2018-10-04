@@ -25,7 +25,7 @@ const resolvers = {
     },
     updateBalance: (obj: {}, args: { input: API.Input.UpdateBalanceInput }) => {
       const account = Account.getAccount(args.input.account);
-      return account.update(args.input);
+      return account.update(args.input.amount);
     },
     createReservedBalance: (obj: {}, args: { input: API.Input.CreateVirtualBalanceInput }) => {
       const balances = new Balances(args.input, BalanceType.TYPES.RESERVE);

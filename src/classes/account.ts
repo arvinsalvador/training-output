@@ -38,13 +38,13 @@ export default class Account {
     return account;
   }
 
-  update(input: { account, amount }) {
+  update(amount) {
 
-    const delta = this.balance + input.amount;
+    const delta = this.balance + amount;
 
     if (delta < 0) {
       throw new InsufficientFundError({
-        account: input.account,
+        account: this.id,
         insufficientFund: true,
       });
     }
