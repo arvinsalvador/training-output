@@ -12,8 +12,8 @@ export default class Balances {
   balance: number;
   type: string;
 
-  constructor(data: { id, account, context, balance }, type) {
-    this.id = data.id;
+  constructor(data: { account, context, balance }, type) {
+    this.id = uuid();
     this.account = data.account;
     this.context = data.context;
     this.balance = data.balance;
@@ -45,11 +45,8 @@ export default class Balances {
 
   save() {
     const accountInfo = accountDatabase[this.account];
-    let balanceType = BalanceType.TYPES.VIRTUAL;
 
     if (this.type === BalanceType.TYPES.RESERVE) {
-
-      balanceType = BalanceType.TYPES.RESERVE;
 
       if (this.balance > accountInfo.balance) {
         throw new InsufficientFundError({accountInfo});
@@ -57,18 +54,10 @@ export default class Balances {
 
       const newAccountBalance = accountInfo.balance - this.balance;
       accountInfo.balance = newAccountBalance;
-
     }
 
-    this.id = uuid();
-    balanceDatabase[this.id] = new Balances({
-      id: this.id,
-      account: this.account,
-      context: this.context,
-      balance: this.balance
-    }, balanceType);
-
-    return Balances.getBalance(this.account, this.context, balanceType);
+    balanceDatabase[this.id] = this;
+    return this;
   }
 
   static getBalance(account, context, type) {
