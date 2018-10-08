@@ -65,13 +65,14 @@ describe('Account Class', () => {
       let instance;
       let result;
       beforeEach(() => {
-        instance = new Account({ balance: 100, availableBalance: 100 });
+        getAccountFake.resetHistory();
+        instance = new AccountMock({ balance: 100, availableBalance: 100 });
         id = instance.id;
         result = instance.save();
       });
 
       it('should give the account', () => {
-        expect(Account.getAccount(id)).to.deep.equals(instance);
+        expect(AccountMock.getAccount(id)).to.deep.equals(instance);
       });
 
       it('should have a return value of the instance', () => {
