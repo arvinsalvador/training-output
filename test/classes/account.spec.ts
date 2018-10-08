@@ -84,8 +84,7 @@ describe('Account Class', () => {
   describe('update', () => {
     let instance;
     beforeEach(() => {
-      instance = new Account({ balance: 0, availableBalance: 0 });
-
+      instance = new AccountMock({ balance: 0, availableBalance: 0 });
     });
 
     describe('Given delta is less than 0', () => {
