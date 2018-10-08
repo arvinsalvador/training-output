@@ -1,4 +1,6 @@
 import { expect } from 'chai';
+import * as sinon from 'sinon';
+import * as proxyquire from 'proxyquire';
 
 import { Account } from './../../src/classes';
 import { InvalidRequestError, InsufficientFundError } from '../../src/errors';
@@ -34,8 +36,24 @@ describe('Account Class', () => {
   });
 
   describe('save', () => {
-    // TODO: Cannot access accountDatabase to ensure record exists
-    it('should store to the `accountDatabase`');
+    describe('Given account does not exist', () => {
+      let accountDatabaseMock = {};
+      const getAccountFake = sinon.fake((id: string) => accountDatabaseMock[id]);
+      let AccountMock = (proxyquire('./../../src/classes/account.ts', {
+        './../memorydb/index': {
+          accountDatabase: accountDatabaseMock
+        }
+      })).default;
+      let instance;
+      beforeEach(() => {
+        getAccountFake.resetHistory();
+        instance = new AccountMock({ balance: 10, availableBalance: 100 });
+        instance.save();
+      });
+      it('should store to the `accountDatabase`', () => {
+        expect(accountDatabaseMock[instance.id]).to.have.property('id').to.equals(instance.id);
+      });
+    });
   });
 
   describe('getAccount', () => {
@@ -57,16 +75,13 @@ describe('Account Class', () => {
         expect(instance).to.deep.equals(result);
       });
     });
-
-    describe('Given account does not exist', () => {
-      it('should throw an error');
-    });
   });
 
   describe('update', () => {
     let instance;
     beforeEach(() => {
       instance = new Account({ balance: 0, availableBalance: 0 });
+
     });
 
     describe('Given delta is less than 0', () => {
@@ -78,6 +93,11 @@ describe('Account Class', () => {
     });
 
     describe('Given delta is greater than 0', () => {
+      it('should update the balance', () => {
+        instance.update(10);
+        expect(instance.balance).to.equal(10);
+      });
+
       it('should return value of the delta', () => {
         expect(instance.update(50)).to.equal(50);
       });
