@@ -6,30 +6,40 @@ import { Account } from './../../src/classes';
 import { InvalidRequestError, InsufficientFundError } from '../../src/errors';
 
 describe('Account Class', () => {
+  let accountDatabaseMock = {};
+  const getAccountFake = sinon.fake((id: string) => accountDatabaseMock[id]);
+  let AccountMock = (proxyquire('./../../src/classes/account.ts', {
+    './../memorydb/index': {
+      accountDatabase: accountDatabaseMock
+    }
+  })).default;
+
   describe('constructor', () => {
     let instance;
     let id;
     beforeEach(() => {
-      instance = new Account({ balance: 10, availableBalance: 100 });
+      getAccountFake.resetHistory();
+      instance = new AccountMock({ balance: 10, availableBalance: 100 });
       id = instance.id;
     });
 
     it('should set id field', () => {
-      expect(instance).to.have.property('id', id);
+      expect(instance).to.have.property('id').to.equals(id);
     });
 
     it('should set balance field', () => {
-      expect(instance).to.have.property('balance', 10);
+      expect(instance).to.have.property('balance').to.equals(10);
     });
 
     it('should set availableBalance field', () => {
-      expect(instance).to.have.property('availableBalance', 100);
+      expect(instance).to.have.property('availableBalance').to.equals(100);
     });
 
     describe('Given balance is less than 0', () => {
       it('should throw an error', () => {
         expect(() => {
-          new Account({ balance: -1, availableBalance: 0 });
+          getAccountFake.resetHistory();
+          new AccountMock({ balance: -1, availableBalance: 0 });
         }).to.throw(InvalidRequestError);
       });
     });
@@ -37,13 +47,6 @@ describe('Account Class', () => {
 
   describe('save', () => {
     describe('Given account does not exist', () => {
-      let accountDatabaseMock = {};
-      const getAccountFake = sinon.fake((id: string) => accountDatabaseMock[id]);
-      let AccountMock = (proxyquire('./../../src/classes/account.ts', {
-        './../memorydb/index': {
-          accountDatabase: accountDatabaseMock
-        }
-      })).default;
       let instance;
       beforeEach(() => {
         getAccountFake.resetHistory();
