@@ -1,22 +1,45 @@
 import { expect } from 'chai';
 import { v4 as uuid } from 'uuid';
+import * as sinon from 'sinon';
+import * as proxyquire from 'proxyquire';
 
-import { Account, Balances } from './../../src/classes';
 import { InvalidRequestError } from '../../src/errors';
 
 describe('Balances class', () => {
   let account;
+  let context = uuid();
+
+  let accountDatabaseMock = {};
+  let balanceDatabaseMock = {};
+
+  const getBalanceFake = sinon.fake((id: string) => balanceDatabaseMock[id]);
+
+  let AccountMock = (proxyquire('./../../src/classes/account.ts', {
+    './../memorydb/index': {
+      accountDatabase: accountDatabaseMock
+    }
+  })).default;
+
+  let BalancesMock = (proxyquire('./../../src/classes/balances.ts', {
+    './../memorydb/index': {
+      balanceDatabase: balanceDatabaseMock,
+      accountDatabase: accountDatabaseMock
+    }
+  })).default;
 
   beforeEach(() => {
-    account = new Account({ balance: 100, availableBalance: 50 });
+    account = new AccountMock({ balance: 1000, availableBalance: 100 });
     account.save();
   });
 
   describe('constructor', () => {
+
     let instance;
     let id;
+
     beforeEach(() => {
-      instance = new Balances({ account: account.id, context: 'a', balance: 100 }, 'Reserve');
+      getBalanceFake.resetHistory();
+      instance = new BalancesMock({ account: account.id, context: context, balance: 100 }, 'Reserve');
       id = instance.id;
     });
 
@@ -29,7 +52,7 @@ describe('Balances class', () => {
     });
 
     it('should set account field', () => {
-      expect(instance).to.have.property('context', 'a');
+      expect(instance).to.have.property('context', context);
     });
 
     it('should set balance field', () => {
@@ -43,7 +66,8 @@ describe('Balances class', () => {
     describe('Given account does not exist', () => {
       it('should throw an error', () => {
         expect(() => {
-          new Balances({ account: uuid(), context: 'a', balance: 0 }, 'Reserve');
+          getBalanceFake.resetHistory();
+          new BalancesMock({ account: uuid(), context: context, balance: 0 }, 'Reserve');
         }).to.throw(InvalidRequestError);
       });
     });
@@ -51,7 +75,8 @@ describe('Balances class', () => {
     describe('Given context is exist', () => {
       it('should throw an error', () => {
         expect(() => {
-          new Balances({ account: uuid(), context: 'a', balance: 0 }, 'Reserve');
+          getBalanceFake.resetHistory();
+          new BalancesMock({ account: uuid(), context: context, balance: 0 }, 'Reserve');
         }).to.throw(InvalidRequestError);
       });
     });
@@ -59,21 +84,31 @@ describe('Balances class', () => {
     describe('Given balance is less than equal to 0', () => {
       it('should throw an error', () => {
         expect(() => {
-          new Balances({ account: uuid(), context: 'b', balance: -5 }, 'any');
+          getBalanceFake.resetHistory();
+          new BalancesMock({ account: uuid(), context: context, balance: -5 }, 'Reserve');
         }).to.throw(InvalidRequestError);
       });
     });
   });
 
   describe('save', () => {
-    // TODO: Cannot access balanceDatabase to ensure record exists
-    it('should store to the `balanceDatabase`');
+    describe('Given balance does not exist', () => {
+      let instance;
+      beforeEach(() => {
+        getBalanceFake.resetHistory();
+        instance = new BalancesMock({ account: account.id, context: context, balance: 20 }, 'Reserve');
+        instance.save();
+      });
+      it('should store to the `balanceDatabase`', () => {
+        expect(balanceDatabaseMock[instance.id]).to.have.property('id').to.equals(instance.id);
+      });
+    });
   });
 
   describe('getBalance', () => {
     describe('Given balance does not exist', () => {
       expect(() => {
-        Balances.getBalance(uuid(), 'abcd', 'any');
+        BalancesMock.getBalance(uuid(), uuid(), 'Reserve');
       }).to.throw(InvalidRequestError);
     });
 
@@ -81,17 +116,19 @@ describe('Balances class', () => {
       let instance;
       let result;
       beforeEach(() => {
-        instance = new Balances({account: account.id, context: 'c', balance: 50 }, 'Reserve');
+        getBalanceFake.resetHistory();
+        instance = new BalancesMock({account: account.id, context: context, balance: 50 }, 'Reserve');
         instance.save();
-        result = Balances.getBalance(account.id, 'c', 'Reserve');
+        result = BalancesMock.getBalance(account.id, context, 'Reserve');
       });
 
       it('should give the balance', () => {
         expect(result).to.deep.equals(instance);
       });
 
-      //TODO: Need clarrifications in this it()
-      it('should return a value of the instance');
+      it('should return a value of the instance', () => {
+        expect(instance).to.deep.equals(result);
+      });
     });
   });
 
@@ -100,9 +137,9 @@ describe('Balances class', () => {
       let instance;
       let result;
       beforeEach(() => {
-        instance = new Balances({account: account.id, context: 'd', balance: 50 }, 'Reserve');
+        instance = new BalancesMock({account: account.id, context: 'd', balance: 50 }, 'Reserve');
         instance.save();
-        result = Balances.getBalance(account.id, 'd', 'Reserve');
+        result = BalancesMock.getBalance(account.id, 'd', 'Reserve');
       });
 
       it('should give the balance info', () => {
@@ -122,7 +159,7 @@ describe('Balances class', () => {
     describe('Given balance exist', () => {
       let result;
       beforeEach(() => {
-        result = Balances.getBalances(account.id, 'Reserve');
+        result = BalancesMock.getBalances(account.id, 'Reserve');
       });
 
       it('should give balances info', () => {
@@ -143,10 +180,10 @@ describe('Balances class', () => {
     let result;
     let balanceInfo;
     beforeEach(() => {
-      instance = new Balances({ account: account.id, context: 'e', balance: 20 }, 'Reserve');
+      instance = new BalancesMock({ account: account.id, context: 'e', balance: 20 }, 'Reserve');
       result = instance.save();
       result.update(20);
-      balanceInfo = Balances.getBalance(account.id, 'e', 'Reserve');
+      balanceInfo = BalancesMock.getBalance(account.id, 'e', 'Reserve');
     });
 
     it('should return value of instance', () => {
