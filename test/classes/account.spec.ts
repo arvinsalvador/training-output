@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as proxyquire from 'proxyquire';
 
-import { Account } from './../../src/classes';
 import { InvalidRequestError, InsufficientFundError } from '../../src/errors';
 
 describe('Account Class', () => {
