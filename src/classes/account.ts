@@ -1,6 +1,7 @@
 import * as uuid from 'uuid/v4';
 
 import { accountModel } from './../models/index';
+import { InvalidRequestError } from './../errors';
 
 export default class Account {
 
@@ -27,5 +28,19 @@ export default class Account {
       email: this.email
     });
     return this;
+  }
+
+  static getAccount(id: string) {
+    const account =  accountModel.findOne({
+      where: { id: id },
+    });
+
+    if (!account) {
+      throw new InvalidRequestError('', {
+        accountExist: false
+      });
+    }
+
+    return account;
   }
 }
