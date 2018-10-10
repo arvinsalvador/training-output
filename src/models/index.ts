@@ -1,0 +1,1 @@
+import { default as accountModel } from './account';
