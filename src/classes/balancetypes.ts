@@ -1,6 +1,7 @@
 const TYPES = {
   VIRTUAL: `Virtual`,
-  RESERVE: `Reserve`
+  RESERVE: `Reserve`,
+  MAIN: `Main`,
 };
 
 export default class BalanceTypes {
