@@ -19,8 +19,8 @@ export default class Account {
     this.email = data.email;
   }
 
-  save() {
-    accountModel.create({
+  async save() {
+    await accountModel.create({
       id: this.id,
       username: this.username,
       firstname: this.firstname,
@@ -30,9 +30,9 @@ export default class Account {
     return this;
   }
 
-  static getAccount(id: string) {
-    const account =  accountModel.findOne({
-      where: { id: id },
+  static async getAccount(id: string) {
+    const account =  await accountModel.findOne({
+      where: { id },
     });
 
     if (!account) {
