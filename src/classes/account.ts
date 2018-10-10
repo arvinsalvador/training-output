@@ -1,5 +1,7 @@
 import * as uuid from 'uuid/v4';
 
+import { accountModel } from './../models/index';
+
 export default class Account {
 
   id: string;
@@ -14,5 +16,16 @@ export default class Account {
     this.firstname = data.firstname;
     this.lastname = data.lastname;
     this.email = data.email;
+  }
+
+  save() {
+    accountModel.create({
+      id: this.id,
+      username: this.username,
+      firstname: this.firstname,
+      lastname: this.lastname,
+      email: this.email
+    });
+    return this;
   }
 }
