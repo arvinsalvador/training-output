@@ -1,55 +1,18 @@
 import * as uuid from 'uuid/v4';
 
-import { InvalidRequestError, InsufficientFundError } from './../errors';
-import { accountDatabase } from './../memorydb/index';
-
 export default class Account {
 
   id: string;
-  balance: number;
-  availableBalance: number;
+  username: string;
+  firstname: string;
+  lastname: string;
+  email: string;
 
-  constructor(data: {balance, availableBalance }) {
+  constructor(data: { username, firstname, lastname, email }) {
     this.id = uuid();
-    this.balance = data.balance;
-    this.availableBalance = data.availableBalance;
-
-    if (this.balance < 0) {
-      throw new InvalidRequestError('', {
-        invalidAmount: true
-      });
-    }
-  }
-
-  save() {
-    accountDatabase[this.id] = this;
-    return this;
-  }
-
-  static getAccount(id: string) {
-
-    const account = accountDatabase[id];
-
-    if (!account) {
-      throw new InvalidRequestError('', {
-        accountExist: false
-      });
-    }
-    return account;
-  }
-
-  update(amount) {
-
-    const delta = this.balance + amount;
-
-    if (delta < 0) {
-      throw new InsufficientFundError({
-        account: this.id,
-        insufficientFund: true,
-      });
-    }
-
-    this.balance = delta;
-    return delta;
+    this.username = data.username;
+    this.firstname = data.firstname;
+    this.lastname = data.lastname;
+    this.email = data.email;
   }
 }
