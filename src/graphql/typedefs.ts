@@ -9,8 +9,10 @@ const typeDefs = gql`
 
   type Account {
     id: ID
-    balance: Float
-    availableBalance: Float
+    username: String
+    firstname: String
+    lastname: String
+    email: String
   }
 
   type ReservedBalance {
@@ -31,8 +33,10 @@ const typeDefs = gql`
 
   input CreateAccountInput {
     id: ID
-    balance: Float!
-    availableBalance: Float!
+    username: String
+    firstname: String
+    lastname: String
+    email: String
   }
 
   input UpdateBalanceInput {

@@ -3,8 +3,10 @@ declare namespace API {
 
     interface CreateAccountInput {
       id: string
-      balance: number
-      availableBalance: number
+      username: string;
+      firstname: string;
+      lastname: string;
+      email: string;
     }
 
     interface UpdateBalanceInput {
