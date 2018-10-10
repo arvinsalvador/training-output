@@ -1,8 +1,8 @@
 import * as uuid from 'uuid/v4';
 
-import { InvalidRequestError, InsufficientFundError } from './../errors';
-import { accountDatabase, balanceDatabase } from './../memorydb/index';
-import { BalanceType } from './index';
+import { InvalidRequestError } from './../errors';
+import { balanceDatabase } from './../memorydb/index';
+import { balanceModel } from './../models';
 
 export default class Balances {
 
@@ -19,23 +19,6 @@ export default class Balances {
     this.balance = data.balance;
     this.type = type;
 
-    const accountInfo = accountDatabase[this.account];
-    const [balanceInfo] = Object.keys(balanceDatabase)
-      .map(key => balanceDatabase[key])
-      .filter(balances => balances.context === this.context);
-
-    if (!accountInfo) {
-      throw new InvalidRequestError('', {
-        accountExist: false
-      });
-    }
-
-    if (balanceInfo) {
-      throw new InvalidRequestError('', {
-        contextExist: true
-      });
-    }
-
     if (this.balance <= 0) {
       throw new InvalidRequestError('', {
         invalidAmount: true
@@ -43,21 +26,28 @@ export default class Balances {
     }
   }
 
-  save() {
-    const accountInfo = accountDatabase[this.account];
-
-    if (this.type === BalanceType.TYPES.RESERVE) {
-
-      if (this.balance > accountInfo.balance) {
-        throw new InsufficientFundError({accountInfo});
-      }
-
-      const newAccountBalance = accountInfo.balance - this.balance;
-      accountInfo.balance = newAccountBalance;
-    }
-
-    balanceDatabase[this.id] = this;
+  async save() {
+    await balanceModel.create({
+      id: this.id,
+      account: this.account,
+      context: this.context,
+      balance: this.balance,
+      type: this.type
+    });
     return this;
+  }
+
+  static async getBalanceContext(context: string) {
+    const balanceInfo =  await balanceModel.findOne({
+      where: { context },
+    });
+
+    if (balanceInfo) {
+      throw new InvalidRequestError('', {
+        contextExist: true
+      });
+    }
+    return false;
   }
 
   static getBalance(account, context, type) {

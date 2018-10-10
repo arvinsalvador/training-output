@@ -5,6 +5,7 @@ const typeDefs = gql`
   enum BalanceType {
     VIRTUAL
     RESERVE
+    MAIN
   }
 
   type Account {
@@ -13,6 +14,14 @@ const typeDefs = gql`
     firstname: String
     lastname: String
     email: String
+  }
+
+  type MainBalance {
+    id: ID
+    account: String
+    context: String
+    balance: Float
+    type: String
   }
 
   type ReservedBalance {
@@ -43,6 +52,13 @@ const typeDefs = gql`
     request: ID!
     account: ID!
     amount: Float
+  }
+
+  input CreateMainBalanceInput {
+    id: ID
+    account: String!
+    context: String!
+    balance: Float!
   }
 
   input CreateReservedBalanceInput {
@@ -101,6 +117,7 @@ const typeDefs = gql`
 
   type Mutation {
     createAccount(input: CreateAccountInput): Account
+    createMainBalance(input: CreateMainBalanceInput): MainBalance
     updateBalance(input: UpdateBalanceInput): Float!
     createReservedBalance(input: CreateReservedBalanceInput): ReservedBalance!
     updateReservedBalance(input: UpdateReservedBalanceInput): ReservedBalance!

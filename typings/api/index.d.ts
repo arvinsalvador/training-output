@@ -9,6 +9,13 @@ declare namespace API {
       email: string;
     }
 
+    interface CreateMainBalanceInput {
+      id: string
+      account: string
+      context: string
+      balance: number
+    }
+
     interface UpdateBalanceInput {
       request: string
       account: string
