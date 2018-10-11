@@ -5,6 +5,9 @@ const resolvers = {
     getAccount: (obj: {}, args: { id }) => {
       return Account.getAccount(args.id);
     },
+    mainBalance: (obj: {}, args: { account }) => {
+      return Balance.getBalance(args.account, undefined, BalanceType.TYPES.MAIN);
+    },
     reservedBalance: (obj: {}, args: { id }) => {
       return Balance.getBalance(undefined, undefined, BalanceType.TYPES.RESERVE, args.id);
     },

@@ -109,6 +109,7 @@ const typeDefs = gql`
 
   type Query {
     getAccount(id: ID!): Account
+    mainBalance(account: ID!): MainBalance
     reservedBalance(id: ID!): ReservedBalance
     virtualBalance(id: ID!): VirtualBalance
     reservedBalances(account: ID!): [ReservedBalance]!
