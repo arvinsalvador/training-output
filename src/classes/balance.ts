@@ -1,9 +1,9 @@
 import * as uuid from 'uuid/v4';
 import { isUndefined } from 'util';
 
-import { InvalidRequestError } from './../errors';
-import { balanceDatabase } from './../memorydb/index';
-import { balanceModel } from './../models';
+import { InvalidRequestError } from '../errors';
+import { balanceDatabase } from '../memorydb/index';
+import { balanceModel } from '../models';
 import { BalanceType } from './index';
 
 export default class Balance {
@@ -93,22 +93,29 @@ export default class Balance {
     return balanceInfo;
   }
 
-  static async update(account : string, type : string, amount : number, context? : string) {
+  static async update(args: { account, type, context? }, amount) {
     let whereObj: { [id : string] : any} = {
-      account: account,
-      type: type
+      account: args.account,
+      type: args.type
     };
 
-    if (!isUndefined(context)) whereObj['context'] = context;
+    if (!isUndefined(args.context)) whereObj['context'] = args.context;
+
+    let delta;
 
     const instance = await balanceModel.findOne({
-      attributes: ['account', 'balance'],
       where : whereObj
     });
 
     if (instance) {
-      console.log(instance.balance);
+      delta = instance.balance + amount;
+      instance.update(
+        { balance: delta },
+        { where: { id: instance.id }}
+      );
     }
+
+    return delta;
   }
 
   static deleteRecord(id: string) {

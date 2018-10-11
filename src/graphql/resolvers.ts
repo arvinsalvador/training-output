@@ -18,6 +18,16 @@ const resolvers = {
       const balances = new Balance(args.input, BalanceType.TYPES.MAIN);
       return balances.save();
     },
+    updateBalance: async (obj: {}, args: { input: API.Input.UpdateBalanceInput }) => {
+      const account = await Account.getAccount(args.input.account);
+      const balance = await Balance.getBalance(account.id, undefined, BalanceType.TYPES.MAIN);
+      const result = await Balance.update({
+        account: balance.account,
+        type: balance.type,
+        context: balance.context,
+      }, args.input.amount);
+      return result;
+    },
   }
 };
 
