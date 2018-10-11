@@ -1,4 +1,4 @@
-import { Account, Balances, BalanceType } from './../classes/index';
+import { Account, Balance, BalanceType } from './../classes/index';
 
 const resolvers = {
   Query: {
@@ -14,8 +14,8 @@ const resolvers = {
     },
     createMainBalance: async (obj: {}, args: { input: API.Input.CreateMainBalanceInput }) => {
       await Account.getAccount(args.input.account);
-      await Balances.getBalanceContext(args.input.context);
-      const balances = new Balances(args.input, BalanceType.TYPES.MAIN);
+      await Balance.checkBalance(args.input.account, undefined, BalanceType.TYPES.MAIN);
+      const balances = new Balance(args.input, BalanceType.TYPES.MAIN);
       return balances.save();
     },
   }
