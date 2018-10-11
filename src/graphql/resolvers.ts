@@ -27,8 +27,8 @@ const resolvers = {
       return account.save();
     },
     createMainBalance: async (obj: {}, args: { input: API.Input.CreateMainBalanceInput }) => {
-      await Account.getAccount(args.input.account);
-      await Balance.checkBalance(args.input.account, undefined, BalanceType.TYPES.MAIN);
+      const account = await Account.getAccount(args.input.account);
+      await Balance.checkBalance(account.id, undefined, BalanceType.TYPES.MAIN);
       const balance = new Balance(args.input, BalanceType.TYPES.MAIN);
       return balance.save();
     },
@@ -43,8 +43,8 @@ const resolvers = {
       return result;
     },
     createReservedBalance: async (obj: {}, args: { input: API.Input.CreateReservedBalanceInput }) => {
-      await Account.getAccount(args.input.account);
-      await Balance.checkBalance(args.input.account, args.input.context, BalanceType.TYPES.RESERVE);
+      const account = await Account.getAccount(args.input.account);
+      await Balance.checkBalance(account.id, args.input.context, BalanceType.TYPES.RESERVE);
       const balance = new Balance(args.input, BalanceType.TYPES.RESERVE);
       return balance.save();
     },
@@ -72,8 +72,8 @@ const resolvers = {
       return Balance.deleteRecord(balanceReserve.id);
     },
     createVirtualBalance: async (obj: {}, args: { input: API.Input.CreateVirtualBalanceInput }) => {
-      await Account.getAccount(args.input.account);
-      await Balance.checkBalance(args.input.account, args.input.context, BalanceType.TYPES.VIRTUAL);
+      const account = await Account.getAccount(args.input.account);
+      await Balance.checkBalance(account.id, args.input.context, BalanceType.TYPES.VIRTUAL);
       const balance = new Balance(args.input, BalanceType.TYPES.VIRTUAL);
       return balance.save();
     },
