@@ -2,7 +2,6 @@ import * as uuid from 'uuid/v4';
 import { isUndefined } from 'util';
 
 import { InvalidRequestError } from '../errors';
-import { balanceDatabase } from '../memorydb/index';
 import { balanceModel } from '../models';
 import { BalanceType } from './index';
 
@@ -127,11 +126,19 @@ export default class Balance {
       );
     }
 
-    return delta;
+    if (args.type === BalanceType.TYPES.MAIN) {
+      return delta;
+    }
+
+    return instance;
   }
 
-  static deleteRecord(id: string) {
-    delete balanceDatabase[id];
+  static async deleteRecord(id: string) {
+
+    await balanceModel.destroy({
+        where: { id: id }
+    });
+
     return true;
   }
 }

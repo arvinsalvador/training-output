@@ -34,6 +34,29 @@ const resolvers = {
       const balances = new Balance(args.input, BalanceType.TYPES.RESERVE);
       return balances.save();
     },
+    updateReservedBalance: async (obj: {}, args: { input: API.Input.UpdateReservedBalanceInput }) => {
+      const account = await Account.getAccount(args.input.account);
+      const balance = await Balance.getBalance(account.id, args.input.context, BalanceType.TYPES.RESERVE);
+      const result = await Balance.update({
+        account: balance.account,
+        type: balance.type,
+        context: balance.context,
+      }, args.input.amount);
+      return result;
+    },
+    releaseReservedBalance: async (obj: {}, args: { input: API.Input.ReleaseReservedBalanceInput }) => {
+      const account = await Account.getAccount(args.input.account);
+      const balanceMain = await Balance.getBalance(account.id, undefined, BalanceType.TYPES.MAIN);
+      const balanceReserve = await Balance.getBalance(account.id, args.input.context, BalanceType.TYPES.RESERVE);
+
+      await Balance.update({
+        account: account.id,
+        type: balanceMain.type,
+        context: undefined,
+      }, balanceReserve.balance);
+
+      return Balance.deleteRecord(balanceReserve.id);
+    },
   }
 };
 
