@@ -79,6 +79,19 @@ const resolvers = {
 
       return Balance.deleteRecord(balance.id);
     },
+    commitVirtualBalance: async (obj: {}, args: { input: API.Input.CommitVirtualBalanceInput }) => {
+      const account = await Account.getAccount(args.input.account);
+      const balanceMain = await Balance.getBalance(account.id, undefined, BalanceType.TYPES.MAIN);
+      const balanceVirtual = await Balance.getBalance(account.id, args.input.context, BalanceType.TYPES.VIRTUAL);
+
+      await Balance.update({
+        account: account.id,
+        type: balanceMain.type,
+        context: undefined,
+      }, balanceVirtual.balance);
+
+      return Balance.deleteRecord(balanceVirtual.id);
+    }
   }
 };
 
