@@ -29,8 +29,8 @@ const resolvers = {
     createMainBalance: async (obj: {}, args: { input: API.Input.CreateMainBalanceInput }) => {
       await Account.getAccount(args.input.account);
       await Balance.checkBalance(args.input.account, undefined, BalanceType.TYPES.MAIN);
-      const balances = new Balance(args.input, BalanceType.TYPES.MAIN);
-      return balances.save();
+      const balance = new Balance(args.input, BalanceType.TYPES.MAIN);
+      return balance.save();
     },
     updateBalance: async (obj: {}, args: { input: API.Input.UpdateBalanceInput }) => {
       const account = await Account.getAccount(args.input.account);
@@ -45,8 +45,8 @@ const resolvers = {
     createReservedBalance: async (obj: {}, args: { input: API.Input.CreateReservedBalanceInput }) => {
       await Account.getAccount(args.input.account);
       await Balance.checkBalance(args.input.account, args.input.context, BalanceType.TYPES.RESERVE);
-      const balances = new Balance(args.input, BalanceType.TYPES.RESERVE);
-      return balances.save();
+      const balance = new Balance(args.input, BalanceType.TYPES.RESERVE);
+      return balance.save();
     },
     updateReservedBalance: async (obj: {}, args: { input: API.Input.UpdateReservedBalanceInput }) => {
       const account = await Account.getAccount(args.input.account);
