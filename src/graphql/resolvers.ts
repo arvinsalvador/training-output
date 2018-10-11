@@ -8,6 +8,9 @@ const resolvers = {
     reservedBalance: (obj: {}, args: { id }) => {
       return Balance.getBalance(undefined, undefined, BalanceType.TYPES.RESERVE, args.id);
     },
+    virtualBalance: (obj: {}, args: {id}) => {
+      return Balance.getBalance(undefined, undefined, BalanceType.TYPES.VIRTUAL, args.id);
+    },
   },
   Mutation: {
     createAccount: async  (obj: {}, args: { input: API.Input.CreateAccountInput }) => {
