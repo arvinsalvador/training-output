@@ -8,9 +8,11 @@ const server = new ApolloServer({ typeDefs, resolvers });
 const app = new Koa();
 server.applyMiddleware({ app });
 
-Promise.all([accountModel.sync(), balanceModel.sync()])
-.then(() => {
+async function main() {
+  await Promise.all([accountModel.sync(), balanceModel.sync()]);
   app.listen({ port: 4000 }, () =>
     console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`),
   );
-});
+}
+
+main();
