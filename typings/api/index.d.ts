@@ -22,6 +22,13 @@ declare namespace API {
       amount: number
     }
 
+    interface CreateReservedBalanceInput {
+      id: string
+      account: string
+      context: string
+      balance: number
+    }
+
     interface UpdateReservedBalanceInput {
       request: string
       account: string

@@ -28,6 +28,12 @@ const resolvers = {
       }, args.input.amount);
       return result;
     },
+    createReservedBalance: async (obj: {}, args: { input: API.Input.CreateReservedBalanceInput }) => {
+      await Account.getAccount(args.input.account);
+      await Balance.checkBalance(args.input.account, args.input.context, BalanceType.TYPES.RESERVE);
+      const balances = new Balance(args.input, BalanceType.TYPES.RESERVE);
+      return balances.save();
+    },
   }
 };
 
