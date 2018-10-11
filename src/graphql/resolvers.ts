@@ -63,6 +63,16 @@ const resolvers = {
       const balance = new Balance(args.input, BalanceType.TYPES.VIRTUAL);
       return balance.save();
     },
+    updateVirtualBalance: async (obj: {}, args: { input: API.Input.UpdateVirtualBalanceInput }) => {
+      const account = await Account.getAccount(args.input.account);
+      const balance = await Balance.getBalance(account.id, args.input.context, BalanceType.TYPES.VIRTUAL);
+      const result = await Balance.update({
+        account: balance.account,
+        type: balance.type,
+        context: balance.context,
+      }, args.input.amount);
+      return result;
+    },
   }
 };
 
