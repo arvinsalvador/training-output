@@ -2,7 +2,17 @@ import * as Sequelize from 'sequelize';
 
 import { sequelize } from './../libs/';
 
-const accountModel = sequelize.define('Account', {
+interface AccountAttributes {
+  id: string;
+  username: string;
+  firstname: string;
+  lastname: string;
+  email: string;
+}
+
+type AccountInstance = Sequelize.Instance<AccountAttributes> & AccountAttributes;
+
+const accountModel = sequelize.define<AccountInstance, AccountAttributes>('Account', {
   id: {
     type: Sequelize.CHAR(36),
     primaryKey: true
