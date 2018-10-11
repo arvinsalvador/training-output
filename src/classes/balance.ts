@@ -92,7 +92,7 @@ export default class Balance {
   }
 
   static async getBalances(account, type) {
-    const balanceInfo =  await balanceModel.findOne({
+    const balanceInfo =  await balanceModel.findAll({
       where: { account, type },
     });
 

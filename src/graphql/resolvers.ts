@@ -8,8 +8,11 @@ const resolvers = {
     reservedBalance: (obj: {}, args: { id }) => {
       return Balance.getBalance(undefined, undefined, BalanceType.TYPES.RESERVE, args.id);
     },
-    virtualBalance: (obj: {}, args: {id}) => {
+    virtualBalance: (obj: {}, args: { id }) => {
       return Balance.getBalance(undefined, undefined, BalanceType.TYPES.VIRTUAL, args.id);
+    },
+    reservedBalances: (obj: {}, args: { account }) => {
+      return Balance.getBalances(args.account, BalanceType.TYPES.RESERVE);
     },
   },
   Mutation: {
