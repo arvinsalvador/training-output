@@ -5,7 +5,9 @@ const resolvers = {
     getAccount: (obj: {}, args: { id }) => {
       return Account.getAccount(args.id);
     },
-
+    reservedBalance: (obj: {}, args: { id }) => {
+      return Balance.getBalance(undefined, undefined, BalanceType.TYPES.RESERVE, args.id);
+    },
   },
   Mutation: {
     createAccount: async  (obj: {}, args: { input: API.Input.CreateAccountInput }) => {
