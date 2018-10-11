@@ -57,6 +57,12 @@ const resolvers = {
 
       return Balance.deleteRecord(balanceReserve.id);
     },
+    createVirtualBalance: async (obj: {}, args: { input: API.Input.CreateVirtualBalanceInput }) => {
+      await Account.getAccount(args.input.account);
+      await Balance.checkBalance(args.input.account, args.input.context, BalanceType.TYPES.VIRTUAL);
+      const balance = new Balance(args.input, BalanceType.TYPES.VIRTUAL);
+      return balance.save();
+    },
   }
 };
 
