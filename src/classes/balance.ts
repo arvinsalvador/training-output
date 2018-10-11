@@ -29,6 +29,11 @@ export default class Balance {
   }
 
   async save() {
+
+    if (this.type === BalanceType.TYPES.RESERVE) {
+      await Balance.update({ account: this.account, type: BalanceType.TYPES.MAIN }, -this.balance);
+    }
+
     await balanceModel.create({
       id: this.id,
       account: this.account,
@@ -63,16 +68,23 @@ export default class Balance {
     let whereObj: { [id : string] : any} = {};
 
     if (!isUndefined(account)) whereObj['account'] = account;
-    if (!isUndefined(context)) whereObj['context'] = context;
     if (!isUndefined(type)) whereObj ['type'] = type;
 
+    if (!isUndefined(context)) {
+      if (!context) {
+        throw new InvalidRequestError('', {
+          contextRequired: true
+        });
+      }
+      whereObj['context'] = context;
+    }
     const balanceInfo =  await balanceModel.findOne({
       where: whereObj,
     });
 
     if (balanceInfo) {
       throw new InvalidRequestError('', {
-        balanceExist: true
+        contextExist: true
       });
     }
 
