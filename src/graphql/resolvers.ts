@@ -73,6 +73,12 @@ const resolvers = {
       }, args.input.amount);
       return result;
     },
+    cancelVirtualBalance: async (obj: {}, args: { input: API.Input.CancelVirtualBalanceInput }) => {
+      const account = await Account.getAccount(args.input.account);
+      const balance = await Balance.getBalance(account.id, args.input.context, BalanceType.TYPES.VIRTUAL);
+
+      return Balance.deleteRecord(balance.id);
+    },
   }
 };
 
