@@ -66,7 +66,6 @@ const resolvers = {
       await Balance.update({
         account: account.id,
         type: balanceMain.type,
-        context: undefined,
       }, balanceReserve.balance);
 
       return Balance.deleteRecord(balanceReserve.id);
@@ -101,7 +100,6 @@ const resolvers = {
       await Balance.update({
         account: account.id,
         type: balanceMain.type,
-        context: undefined,
       }, balanceVirtual.balance);
 
       return Balance.deleteRecord(balanceVirtual.id);
