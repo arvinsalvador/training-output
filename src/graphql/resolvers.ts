@@ -6,13 +6,22 @@ const resolvers = {
       return Account.getAccount(args.id);
     },
     mainBalance: (obj: {}, args: { account }) => {
-      return Balance.getBalance(args.account, undefined, BalanceType.TYPES.MAIN);
+      return Balance.getBalance({
+        account: args.account,
+        type: BalanceType.TYPES.MAIN,
+      });
     },
     reservedBalance: (obj: {}, args: { id }) => {
-      return Balance.getBalance(undefined, undefined, BalanceType.TYPES.RESERVE, args.id);
+      return Balance.getBalance({
+        type: BalanceType.TYPES.RESERVE,
+        id: args.id,
+      });
     },
     virtualBalance: (obj: {}, args: { id }) => {
-      return Balance.getBalance(undefined, undefined, BalanceType.TYPES.VIRTUAL, args.id);
+      return Balance.getBalance({
+        type: BalanceType.TYPES.VIRTUAL,
+        id: args.id,
+      });
     },
     reservedBalances: (obj: {}, args: { account }) => {
       return Balance.getBalances(args.account, BalanceType.TYPES.RESERVE);
@@ -34,7 +43,10 @@ const resolvers = {
     },
     updateBalance: async (obj: {}, args: { input: API.Input.UpdateBalanceInput }) => {
       const account = await Account.getAccount(args.input.account);
-      const balance = await Balance.getBalance(account.id, undefined, BalanceType.TYPES.MAIN);
+      const balance = await Balance.getBalance({
+        account: account.id,
+        type: BalanceType.TYPES.MAIN,
+      });
       const result = await Balance.update({
         account: balance.account,
         type: balance.type,
@@ -50,7 +62,11 @@ const resolvers = {
     },
     updateReservedBalance: async (obj: {}, args: { input: API.Input.UpdateReservedBalanceInput }) => {
       const account = await Account.getAccount(args.input.account);
-      const balance = await Balance.getBalance(account.id, args.input.context, BalanceType.TYPES.RESERVE);
+      const balance = await Balance.getBalance({
+        account: account.id,
+        context: args.input.context,
+        type: BalanceType.TYPES.RESERVE
+      });
       const result = await Balance.update({
         account: balance.account,
         type: balance.type,
@@ -60,8 +76,15 @@ const resolvers = {
     },
     releaseReservedBalance: async (obj: {}, args: { input: API.Input.ReleaseReservedBalanceInput }) => {
       const account = await Account.getAccount(args.input.account);
-      const balanceMain = await Balance.getBalance(account.id, undefined, BalanceType.TYPES.MAIN);
-      const balanceReserve = await Balance.getBalance(account.id, args.input.context, BalanceType.TYPES.RESERVE);
+      const balanceMain = await Balance.getBalance({
+        account: account.id,
+        type: BalanceType.TYPES.MAIN,
+      });
+      const balanceReserve = await Balance.getBalance({
+        account: account.id,
+        context: args.input.context,
+        type: BalanceType.TYPES.RESERVE,
+      });
 
       await Balance.update({
         account: account.id,
@@ -78,7 +101,11 @@ const resolvers = {
     },
     updateVirtualBalance: async (obj: {}, args: { input: API.Input.UpdateVirtualBalanceInput }) => {
       const account = await Account.getAccount(args.input.account);
-      const balance = await Balance.getBalance(account.id, args.input.context, BalanceType.TYPES.VIRTUAL);
+      const balance = await Balance.getBalance({
+        account: account.id,
+        context: args.input.context,
+        type: BalanceType.TYPES.VIRTUAL,
+      });
       const result = await Balance.update({
         account: balance.account,
         type: balance.type,
@@ -88,14 +115,25 @@ const resolvers = {
     },
     cancelVirtualBalance: async (obj: {}, args: { input: API.Input.CancelVirtualBalanceInput }) => {
       const account = await Account.getAccount(args.input.account);
-      const balance = await Balance.getBalance(account.id, args.input.context, BalanceType.TYPES.VIRTUAL);
+      const balance = await Balance.getBalance({
+        account: account.id,
+        context: args.input.context,
+        type: BalanceType.TYPES.VIRTUAL,
+      });
 
       return Balance.deleteRecord(balance.id);
     },
     commitVirtualBalance: async (obj: {}, args: { input: API.Input.CommitVirtualBalanceInput }) => {
       const account = await Account.getAccount(args.input.account);
-      const balanceMain = await Balance.getBalance(account.id, undefined, BalanceType.TYPES.MAIN);
-      const balanceVirtual = await Balance.getBalance(account.id, args.input.context, BalanceType.TYPES.VIRTUAL);
+      const balanceMain = await Balance.getBalance({
+        account: account.id,
+        type: BalanceType.TYPES.MAIN,
+      });
+      const balanceVirtual = await Balance.getBalance({
+        account: account.id,
+        context: args.input.context,
+        type: BalanceType.TYPES.VIRTUAL,
+      });
 
       await Balance.update({
         account: account.id,
