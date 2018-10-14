@@ -43,13 +43,7 @@ export default class Balance {
     return this;
   }
 
-  static async getBalance(account? : string, context? : string,  type? : string, id? : string) {
-    let whereObj: { [id : string] : any} = {};
-
-    if (!isUndefined(account)) whereObj['account'] = account;
-    if (!isUndefined(context)) whereObj['context'] = context;
-    if (!isUndefined(type)) whereObj ['type'] = type;
-    if (!isUndefined(id)) whereObj ['id'] = id;
+  static async getBalance(whereObj: { [id : string] : any} = {}) {
 
     const balanceInfo =  await balanceModel.findOne({
       where: whereObj,
