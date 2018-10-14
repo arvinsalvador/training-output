@@ -20,6 +20,16 @@ export default class Account {
   }
 
   async save() {
+    const account =  await accountModel.findOne({
+      where: { username: this.username },
+    });
+
+    if (account) {
+      throw new InvalidRequestError('', {
+        accountExist: true
+      });
+    }
+
     await accountModel.create({
       id: this.id,
       username: this.username,
@@ -27,12 +37,13 @@ export default class Account {
       lastname: this.lastname,
       email: this.email
     });
+
     return this;
   }
 
-  static async getAccount(id: string) {
+  static async getAccount(whereObj: { [id : string] : any} = {}) {
     const account =  await accountModel.findOne({
-      where: { id },
+      where: whereObj,
     });
 
     if (!account) {
