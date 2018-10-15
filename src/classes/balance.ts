@@ -87,14 +87,7 @@ export default class Balance {
     return balanceInfo;
   }
 
-  static async update(args: { account, type, context? }, amount) {
-    let whereObj: { [id : string] : any} = {
-      account: args.account,
-      type: args.type
-    };
-
-    if (!isUndefined(args.context)) whereObj['context'] = args.context;
-
+  static async update(whereObj: {[id: string] : any } = {}, amount) {
     let delta;
 
     const instance = await balanceModel.findOne({
