@@ -1,5 +1,4 @@
 import * as uuid from 'uuid/v4';
-import { isUndefined } from 'util';
 
 import { InvalidRequestError } from '../errors';
 import { balanceModel } from '../models';
