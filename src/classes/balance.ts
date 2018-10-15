@@ -99,10 +99,10 @@ export default class Balance {
         { balance: delta },
         { where: { id: instance.id }}
       );
-    }
 
-    if (args.type === BalanceType.TYPES.MAIN) {
-      return delta;
+      if (instance.type === BalanceType.TYPES.MAIN) {
+        return delta;
+      }
     }
 
     return instance;
