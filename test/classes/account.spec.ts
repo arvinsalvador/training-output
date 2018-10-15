@@ -1,24 +1,34 @@
-import { expect } from 'chai';
+import * as chai from 'chai';
+import { describe } from 'mocha';
+import * as chaiAsPromise from 'chai-as-promised';
+
 import * as sinon from 'sinon';
 import * as proxyquire from 'proxyquire';
 
-import { InvalidRequestError, InsufficientFundError } from '../../src/errors';
+import { InvalidRequestError } from '../../src/errors';
+import uuid = require('uuid');
+
+chai.use(chaiAsPromise);
+const { expect } = chai;
 
 describe('Account Class', () => {
-  let accountDatabaseMock = {};
-  const getAccountFake = sinon.fake((id: string) => accountDatabaseMock[id]);
-  let AccountMock = (proxyquire('./../../src/classes/account.ts', {
-    './../memorydb/index': {
-      accountDatabase: accountDatabaseMock
-    }
-  })).default;
 
   describe('constructor', () => {
+    let AccountMock;
     let instance;
     let id;
+
+    AccountMock = (proxyquire('./../../src/classes/account.ts', {
+      './../models/index': {}
+    })).default;
+
     beforeEach(() => {
-      getAccountFake.resetHistory();
-      instance = new AccountMock({ balance: 10, availableBalance: 100 });
+      instance = new AccountMock({
+        username: 'sampleuser',
+        firstname: 'Juan',
+        lastname: 'Dela Cruz',
+        email: 'juandelacruz@mail.com',
+      });
       id = instance.id;
     });
 
@@ -26,82 +36,152 @@ describe('Account Class', () => {
       expect(instance).to.have.property('id').to.equals(id);
     });
 
-    it('should set balance field', () => {
-      expect(instance).to.have.property('balance').to.equals(10);
+    it('should set username field', () => {
+      expect(instance).to.have.property('username').to.equals('sampleuser');
     });
 
-    it('should set availableBalance field', () => {
-      expect(instance).to.have.property('availableBalance').to.equals(100);
+    it('should set firstname field', () => {
+      expect(instance).to.have.property('firstname').to.equals('Juan');
     });
 
-    describe('Given balance is less than 0', () => {
-      it('should throw an error', () => {
-        expect(() => {
-          getAccountFake.resetHistory();
-          new AccountMock({ balance: -1, availableBalance: 0 });
-        }).to.throw(InvalidRequestError);
-      });
+    it('should set lastname field', () => {
+      expect(instance).to.have.property('lastname').to.equals('Dela Cruz');
+    });
+
+    it('should set email field', () => {
+      expect(instance).to.have.property('email').to.equals('juandelacruz@mail.com');
     });
   });
 
   describe('save', () => {
-    describe('Given account does not exist', () => {
-      let instance;
-      beforeEach(() => {
-        getAccountFake.resetHistory();
-        instance = new AccountMock({ balance: 10, availableBalance: 100 });
-        instance.save();
+    describe('Given account exist', () => {
+      let AccountMock;
+      const findOneFake = sinon.spy(async () => {
+        return {};
       });
-      it('should store to the `accountDatabase`', () => {
-        expect(accountDatabaseMock[instance.id]).to.have.property('id').to.equals(instance.id);
+
+      AccountMock = (proxyquire('./../../src/classes/account.ts', {
+        './../models/index': {
+          accountModel: {
+            findOne: findOneFake
+          }
+        }
+      })).default;
+
+      let instance;
+
+      beforeEach(() => {
+        instance = new AccountMock({
+          username: 'sampleuser',
+          firstname: 'Juan',
+          lastname: 'Dela Cruz',
+          email: 'juandelacruz@mail.com',
+        });
+      });
+
+      it('should throw an error', async () => {
+        await expect(instance.save())
+          .to.eventually.rejectedWith(InvalidRequestError);
+      });
+    });
+
+    describe('Given account does not exist', () => {
+      let AccountMock;
+      const findOneFake = sinon.spy(() => {
+        return false;
+      });
+      const createFake = sinon.spy();
+
+      AccountMock = (proxyquire('./../../src/classes/account.ts', {
+        './../models/index': {
+          accountModel: {
+            findOne: findOneFake,
+            create: createFake
+          }
+        }
+      })).default;
+
+      let instance;
+
+      beforeEach(async () => {
+        instance = new AccountMock({
+          username: 'sampleuser',
+          firstname: 'Juan',
+          lastname: 'Dela Cruz',
+          email: 'juandelacruz@mail.com',
+        });
+        await instance.save();
+      });
+
+      it('should call the accountModel create', async () => {
+        await expect(createFake.lastCall.lastArg)
+          .to.have.property('id').to.equal(instance.id);
+      });
+
+      it('should return the instance', () => {
+        expect(instance).to.have.property('id');
       });
     });
   });
 
   describe('getAccount', () => {
-    describe('Given account exist', () => {
-      let id;
-      let instance;
-      let result;
+    describe('Given account does not exist', () => {
+      let AccountMock;
+
+      const findOneFake = sinon.spy(() => {
+        return false;
+      });
+
+      AccountMock = (proxyquire('./../../src/classes/account.ts', {
+        './../models/index': {
+          accountModel: {
+            findOne: findOneFake
+          }
+        }
+      })).default;
+
+      let account;
+
       beforeEach(() => {
-        getAccountFake.resetHistory();
-        instance = new AccountMock({ balance: 100, availableBalance: 100 });
-        id = instance.id;
-        result = instance.save();
+        account = AccountMock.getAccount({ id: uuid() });
       });
 
-      it('should give the account', () => {
-        expect(AccountMock.getAccount(id)).to.deep.equals(instance);
-      });
-
-      it('should have a return value of the instance', () => {
-        expect(instance).to.deep.equals(result);
-      });
-    });
-  });
-
-  describe('update', () => {
-    let instance;
-    beforeEach(() => {
-      instance = new AccountMock({ balance: 0, availableBalance: 0 });
-    });
-
-    describe('Given delta is less than 0', () => {
-      it('should throw an error', () => {
-        expect(() => {
-          instance.update(-1);
-        }).to.throw(InsufficientFundError);
+      it('should throw an error', async () => {
+        await expect(account).to.eventually.rejectedWith(InvalidRequestError);
       });
     });
 
-    describe('Given delta is greater than 0', () => {
-      it('should update the balance', () => {
-        instance.update(10);
-        expect(instance.balance).to.equal(10);
+    describe('Given account exist', () => {
+      let AccountMock;
+      let uid = uuid();
+
+      const findOneFake = sinon.spy(async () => {
+        return {
+          id: uid,
+          username: 'sampleuser',
+          firstname: 'Juan',
+          lastname: 'Dela Cruz',
+          email: 'juandelacruz@gmail.com',
+        };
       });
 
-      it('should return value of the delta', () => {
-        expect(instance.update(50)).to.equal(50);
+      AccountMock = (proxyquire('./../../src/classes/account.ts', {
+        './../models/index': {
+          accountModel: {
+            findOne: findOneFake
+          }
+        }
+      })).default;
+
+      let account;
+
+      beforeEach(async () => {
+        account = await AccountMock.getAccount({ id: uid });
+      });
+
+      it('should return value of account', async () => {
+        await expect(account)
+          .to.have.property('id').to.equal(uid);
       });
     });
   });
